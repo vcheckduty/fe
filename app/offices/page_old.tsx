@@ -1,0 +1,352 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { officeAPI } from '@/lib/api';
+import type { Office } from '@/types';
+
+export default function OfficesPage() {
+  const router = useRouter();
+  const { user: currentUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
+  const [offices, setOffices] = useState<Office[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingOffice, setEditingOffice] = useState<Office | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    lat: '',
+    lng: '',
+    radius: '50',
+    description: '',
+    isActive: true,
+  });
+
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || currentUser?.role !== 'admin')) {
+      router.push('/dashboard');
+    }
+  }, [authLoading, isAuthenticated, currentUser, router]);
+
+  useEffect(() => {
+    if (isAuthenticated && currentUser?.role === 'admin') {
+      fetchOffices();
+    }
+  }, [isAuthenticated, currentUser]);
+
+  const fetchOffices = async () => {
+    try {
+      setIsLoading(true);
+      const response = await officeAPI.getAll();
+      if (response.success) {
+        setOffices(response.data.offices);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const officeData = {
+        name: formData.name,
+        address: formData.address,
+        location: {
+          lat: parseFloat(formData.lat),
+          lng: parseFloat(formData.lng),
+        },
+        radius: parseInt(formData.radius),
+        description: formData.description,
+        isActive: formData.isActive,
+      };
+
+      if (editingOffice) {
+        await officeAPI.update(editingOffice._id || editingOffice.id!, officeData);
+      } else {
+        await officeAPI.create(officeData);
+      }
+
+      setShowModal(false);
+      resetForm();
+      fetchOffices();
+    } catch (err: any) {
+      alert('Lỗi: ' + err.message);
+    }
+  };
+
+  const handleEdit = (office: Office) => {
+    setEditingOffice(office);
+    setFormData({
+      name: office.name,
+      address: office.address,
+      lat: office.location.lat.toString(),
+      lng: office.location.lng.toString(),
+      radius: office.radius.toString(),
+      description: office.description || '',
+      isActive: office.isActive,
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = async (officeId: string) => {
+    if (!confirm('Bạn có chắc chắn muốn xóa office này?')) return;
+
+    try {
+      await officeAPI.delete(officeId);
+      setOffices(offices.filter((o) => (o._id || o.id) !== officeId));
+    } catch (err: any) {
+      alert('Xóa office thất bại: ' + err.message);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      address: '',
+      lat: '',
+      lng: '',
+      radius: '50',
+      description: '',
+      isActive: true,
+    });
+    setEditingOffice(null);
+  };
+
+  if (authLoading || !currentUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Đang tải...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="p-2 hover:bg-white/10 rounded-lg transition"
+              >
+                ← Quay lại
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold">Quản lý Trụ sở</h1>
+                <p className="text-sm text-blue-100 mt-1">{currentUser.fullName} • ADMIN</p>
+              </div>
+            </div>
+            <button onClick={logout} className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-8">
+        {/* Stats & Add Button */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="bg-white rounded-lg shadow p-4">
+            <p className="text-gray-600 text-sm">Tổng trụ sở</p>
+            <p className="text-3xl font-bold text-blue-600">{offices.length}</p>
+          </div>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition shadow-lg"
+          >
+            ➕ Thêm trụ sở mới
+          </button>
+        </div>
+
+        {/* Offices List */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6">Danh sách trụ sở</h2>
+
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Đang tải...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-600">{error}</div>
+          ) : offices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">Chưa có trụ sở nào</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {offices.map((office) => (
+                <div
+                  key={office._id || office.id}
+                  className="border-2 border-gray-200 rounded-xl p-4 hover:shadow-lg transition"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold text-gray-800">{office.name}</h3>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-semibold ${
+                        office.isActive
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {office.isActive ? 'Hoạt động' : 'Vô hiệu'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">📍 {office.address}</p>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Tọa độ: {office.location.lat}, {office.location.lng}
+                  </p>
+                  <p className="text-sm font-semibold text-blue-600 mb-3">
+                    Bán kính: {office.radius}m
+                  </p>
+                  {office.description && (
+                    <p className="text-xs text-gray-500 mb-3 italic">{office.description}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(office)}
+                      className="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm font-semibold transition"
+                    >
+                      ✏️ Sửa
+                    </button>
+                    <button
+                      onClick={() => handleDelete(office._id || office.id!)}
+                      className="flex-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded text-sm font-semibold transition"
+                    >
+                      🗑️ Xóa
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              {editingOffice ? 'Chỉnh sửa trụ sở' : 'Thêm trụ sở mới'}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tên trụ sở *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Trụ sở Công an Quận 1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ *</label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="123 Đường ABC, Quận 1, TP.HCM"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Latitude *</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={formData.lat}
+                    onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="16.467"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Longitude *</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={formData.lng}
+                    onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="107.590"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bán kính (mét) *</label>
+                <input
+                  type="number"
+                  value={formData.radius}
+                  onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="50"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Mô tả về trụ sở..."
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+                  Trạng thái hoạt động
+                </label>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    resetForm();
+                  }}
+                  className="flex-1 px-4 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+                >
+                  {editingOffice ? 'Cập nhật' : 'Thêm mới'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
