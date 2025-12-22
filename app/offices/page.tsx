@@ -54,6 +54,12 @@ export default function OfficesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate coordinates
+    if (!formData.lat || !formData.lng) {
+      alert('Vui lòng nhập tọa độ (Latitude và Longitude)');
+      return;
+    }
+
     try {
       const officeData = {
         name: formData.name,
@@ -62,7 +68,7 @@ export default function OfficesPage() {
           lat: parseFloat(formData.lat),
           lng: parseFloat(formData.lng),
         },
-        radius: parseInt(formData.radius),
+        radius: 50, // Fixed radius: 50m
         description: formData.description,
         isActive: formData.isActive,
       };
@@ -273,12 +279,16 @@ export default function OfficesPage() {
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  placeholder="123 Đường ABC..."
+                  placeholder="Nhập địa chỉ..."
                 />
               </div>
+              
+              {/* Coordinate inputs */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Latitude *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Latitude (Vĩ độ) *
+                  </label>
                   <input
                     type="number"
                     step="any"
@@ -286,11 +296,13 @@ export default function OfficesPage() {
                     onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
                     required
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    placeholder="16.467"
+                    placeholder="VD: 16.467"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Longitude *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Longitude (Kinh độ) *
+                  </label>
                   <input
                     type="number"
                     step="any"
@@ -298,21 +310,27 @@ export default function OfficesPage() {
                     onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
                     required
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    placeholder="107.590"
+                    placeholder="VD: 107.590"
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bán kính (mét) *</label>
-                <input
-                  type="number"
-                  value={formData.radius}
-                  onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
-                  required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  placeholder="50"
-                />
+              
+              {/* Helper text */}
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-xs text-gray-700">
+                  💡 <strong>Cách lấy tọa độ:</strong> Mở{' '}
+                  <a 
+                    href="https://www.google.com/maps" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
+                    Google Maps
+                  </a>
+                  , click chuột phải vào địa điểm, chọn số tọa độ đầu tiên để copy.
+                </p>
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
                 <textarea
