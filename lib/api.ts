@@ -259,6 +259,47 @@ export const officeAPI = {
       method: 'DELETE',
     });
   },
+
+  // Office Members Management
+  getMembers: async (officeId: string): Promise<{
+    success: boolean;
+    data: {
+      officeId: string;
+      officeName: string;
+      members: User[];
+    };
+  }> => {
+    return apiFetch(`/api/offices/${officeId}/members`);
+  },
+
+  addMember: async (officeId: string, userId: string): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      officeId: string;
+      officeName: string;
+      user: User;
+    };
+  }> => {
+    return apiFetch(`/api/offices/${officeId}/members`, {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  },
+
+  removeMember: async (officeId: string, userId: string): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      officeId: string;
+      officeName: string;
+      removedUser: User;
+    };
+  }> => {
+    return apiFetch(`/api/offices/${officeId}/members?userId=${userId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 export default {

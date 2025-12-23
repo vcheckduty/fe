@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { officeAPI } from '@/lib/api';
 import type { Office } from '@/types';
 import Image from 'next/image';
+import OfficeMembersModal from '@/components/OfficeMembersModal';
 
 export default function OfficesPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function OfficesPage() {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingOffice, setEditingOffice] = useState<Office | null>(null);
+  const [selectedOfficeForMembers, setSelectedOfficeForMembers] = useState<Office | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -26,13 +28,13 @@ export default function OfficesPage() {
   });
 
   useEffect(() => {
-    if (!authLoading && (!isAuthenticated || currentUser?.role !== 'admin')) {
+    if (!authLoading && (!isAuthenticated || (currentUser?.role !== 'admin' && currentUser?.role !== 'supervisor'))) {
       router.push('/dashboard');
     }
   }, [authLoading, isAuthenticated, currentUser, router]);
 
   useEffect(() => {
-    if (isAuthenticated && currentUser?.role === 'admin') {
+    if (isAuthenticated && (currentUser?.role === 'admin' || currentUser?.role === 'supervisor')) {
       fetchOffices();
     }
   }, [isAuthenticated, currentUser]);
@@ -230,18 +232,30 @@ export default function OfficesPage() {
                     <p className="text-xs text-gray-500 mb-4 italic">{office.description}</p>
                   )}
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(office)}
-                      className="flex-1 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-semibold transition"
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      onClick={() => handleDelete(office._id || office.id!)}
-                      className="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-semibold transition"
-                    >
-                      Xóa
-                    </button>
+                    {currentUser?.role === 'admin' && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(office)}
+                          className="flex-1 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-semibold transition"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => handleDelete(office._id || office.id!)}
+                          className="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-semibold transition"
+                        >
+                          Xóa
+                        </button>
+                      </>
+                    )}
+                    {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+                      <button
+                        onClick={() => setSelectedOfficeForMembers(office)}
+                        className="flex-1 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-sm font-semibold transition"
+                      >
+                        👥 Thành viên
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -374,6 +388,16 @@ export default function OfficesPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Office Members Modal */}
+      {selectedOfficeForMembers && (
+        <OfficeMembersModal
+          office={selectedOfficeForMembers}
+          isOpen={!!selectedOfficeForMembers}
+          onClose={() => setSelectedOfficeForMembers(null)}
+          onUpdate={fetchOffices}
+        />
       )}
     </div>
   );

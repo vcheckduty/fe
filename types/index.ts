@@ -14,6 +14,7 @@ export interface User {
   role: UserRole;
   badgeNumber?: string;
   department?: string;
+  officeId?: string;
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -39,6 +40,8 @@ export interface Office {
     lng: number;
   };
   radius: number;
+  members?: string[] | User[];
+  supervisorId?: string;
   isActive: boolean;
   description?: string;
   createdAt?: Date;

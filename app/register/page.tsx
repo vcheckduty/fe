@@ -96,10 +96,12 @@ export default function RegisterPage() {
       
       // OTP verified, proceed with registration
       const { confirmPassword, ...registerData } = formData;
-      const response = await register(registerData);
+      const response = await authAPI.register(registerData);
 
       if (response.success) {
-        router.push('/dashboard');
+        // Registration successful, redirect to login page
+        alert('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+        router.push('/login');
       } else {
         setError(response.error || 'Đăng ký thất bại');
       }
