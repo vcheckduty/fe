@@ -236,7 +236,7 @@ export default function OfficeMembersModal({
                       </div>
                     </div>
                     <button
-                      onClick={() => handleRemoveMember(member.id || member._id)}
+                      onClick={() => handleRemoveMember((member.id || member._id) as string)}
                       disabled={isLoading}
                       className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
