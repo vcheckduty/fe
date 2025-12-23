@@ -34,9 +34,12 @@ export default function OfficeMembersModal({
 
   const loadMembers = async () => {
     try {
-      const response = await officeAPI.getMembers(office._id || office.id || '');
+      const officeId = office._id || office.id || '';
+      console.log('🔍 Loading members for office:', officeId, 'Office object:', office);
+      const response = await officeAPI.getMembers(officeId);
       setMembers(response.data.members);
     } catch (err: any) {
+      console.error('❌ Load members error:', err);
       setError(err.message || 'Failed to load members');
     }
   };
@@ -97,9 +100,9 @@ export default function OfficeMembersModal({
 
   if (!isOpen) return null;
 
-  const memberIds = members.map((m) => m.id);
+  const memberIds = members.map((m) => m.id || m._id);
   const usersNotInOffice = availableUsers.filter(
-    (user) => !memberIds.includes(user.id) && user.isActive
+    (user) => !memberIds.includes(user.id || user._id) && user.isActive && !user.officeId
   );
 
   return (
@@ -164,7 +167,7 @@ export default function OfficeMembersModal({
                     >
                       <option value="">-- Chọn nhân viên --</option>
                       {usersNotInOffice.map((user) => (
-                        <option key={user.id} value={user.id}>
+                        <option key={user.id || user._id} value={user.id || user._id}>
                           {user.fullName} ({user.username}) - {user.email}
                         </option>
                       ))}
@@ -213,7 +216,7 @@ export default function OfficeMembersModal({
               <div className="space-y-2">
                 {members.map((member) => (
                   <div
-                    key={member.id}
+                    key={member.id || member._id}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
                   >
                     <div className="flex-1">
@@ -233,7 +236,7 @@ export default function OfficeMembersModal({
                       </div>
                     </div>
                     <button
-                      onClick={() => handleRemoveMember(member.id)}
+                      onClick={() => handleRemoveMember(member.id || member._id)}
                       disabled={isLoading}
                       className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >

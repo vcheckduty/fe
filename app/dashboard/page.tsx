@@ -32,12 +32,39 @@ export default function DashboardPage() {
 
   const fetchOffices = async () => {
     try {
+      console.log('🔍 User officeId:', user?.officeId, 'Type:', typeof user?.officeId);
+      
+      // Chỉ fetch office nếu user có officeId
+      if (!user?.officeId) {
+        console.log('⚠️ User không có officeId');
+        setOffices([]);
+        return;
+      }
+
       const response = await officeAPI.getAll();
       if (response.success) {
-        const activeOffices = response.data.offices.filter((o: Office) => o.isActive);
-        setOffices(activeOffices);
-        if (activeOffices.length > 0) {
-          setSelectedOffice(activeOffices[0]._id || activeOffices[0].id || '');
+        console.log('📋 All offices:', response.data.offices.map((o: Office) => ({
+          id: o._id || o.id,
+          name: o.name
+        })));
+        
+        // Chỉ lấy office mà user được gán
+        const userOffice = response.data.offices.find(
+          (o: Office) => {
+            const officeId = o._id || o.id;
+            const match = officeId === user.officeId || String(officeId) === String(user.officeId);
+            console.log(`Comparing office ${officeId} with user officeId ${user.officeId}:`, match);
+            return match && o.isActive;
+          }
+        );
+        
+        if (userOffice) {
+          console.log('✅ Found user office:', userOffice.name);
+          setOffices([userOffice]);
+          setSelectedOffice(userOffice._id || userOffice.id || '');
+        } else {
+          console.log('❌ Không tìm thấy office của user');
+          setOffices([]);
         }
       }
     } catch (err: any) {
@@ -132,21 +159,21 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {(user.role === 'admin' || user.role === 'supervisor') && (
+                <button
+                  onClick={() => router.push('/offices')}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                >
+                  Quản lý Trụ sở
+                </button>
+              )}
               {user.role === 'admin' && (
-                <>
-                  <button
-                    onClick={() => router.push('/offices')}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    Quản lý Trụ sở
-                  </button>
-                  <button
-                    onClick={() => router.push('/users')}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    Quản lý Users
-                  </button>
-                </>
+                <button
+                  onClick={() => router.push('/users')}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                >
+                  Quản lý Users
+                </button>
               )}
               <button onClick={logout} className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">
                 Đăng xuất
@@ -158,7 +185,8 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Check-in Section */}
+        {/* Check-in Section - Only for Officers */}
+        {user.role === 'officer' && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Check-in GPS</h2>
           
@@ -220,6 +248,7 @@ export default function DashboardPage() {
             )}
           </button>
         </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

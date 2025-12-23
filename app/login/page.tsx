@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { authAPI } from '@/lib/api';
 import Image from 'next/image';
+import OTPInput from '@/components/OTPInput';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +14,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [countdown, setCountdown] = useState(300);
+  const [canResend, setCanResend] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +29,116 @@ export default function LoginPage() {
       
       if (response.success) {
         router.push('/dashboard');
+      } else if (response.error === 'Account not activated' || (response as any).needsActivation) {
+        // Account needs activation - show OTP screen
+        const email = (response as any).email;
+        setUserEmail(email);
+        
+        // Send OTP
+        await authAPI.sendOTP(email);
+        setShowOTP(true);
+        setCountdown(300);
+        setCanResend(false);
       } else {
         setError(response.error || 'Đăng nhập thất bại');
       }
     } catch (err: any) {
-      setError(err.message || 'Đăng nhập thất bại');
+      if (err.message?.includes('Account not activated') || err.needsActivation) {
+        // Account needs activation
+        const email = err.email || userEmail;
+        if (email) {
+          setUserEmail(email);
+          try {
+            await authAPI.sendOTP(email);
+            setShowOTP(true);
+            setCountdown(300);
+            setCanResend(false);
+          } catch {
+            setError('Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.');
+          }
+        } else {
+          setError('Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.');
+        }
+      } else {
+        setError(err.message || 'Đăng nhập thất bại');
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleOTPComplete = async (otp: string) => {
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await authAPI.verifyOTP(userEmail, otp);
+      alert('Tài khoản đã được kích hoạt! Vui lòng đăng nhập lại.');
+      setShowOTP(false);
+      setUsername('');
+      setPassword('');
+    } catch (err: any) {
+      setError(err.message || 'Mã OTP không hợp lệ');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!canResend) return;
+    
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await authAPI.sendOTP(userEmail);
+      setCountdown(300);
+      setCanResend(false);
+    } catch (err: any) {
+      setError(err.message || 'Không thể gửi lại mã OTP');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showOTP) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="relative w-16 h-16 mx-auto mb-4">
+              <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Kích hoạt tài khoản</h2>
+            <p className="text-sm text-gray-600">
+              Nhập mã OTP đã được gửi đến email: <strong>{userEmail}</strong>
+            </p>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          <OTPInput
+            length={6}
+            onComplete={handleOTPComplete}
+            disabled={isLoading}
+          />
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowOTP(false)}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              ← Quay lại đăng nhập
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-gray-50">

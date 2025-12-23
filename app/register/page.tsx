@@ -73,7 +73,17 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Send OTP to email
+      // Step 1: Create user with isActive=false
+      const { confirmPassword, ...registerData } = formData;
+      const registerResponse = await authAPI.register(registerData);
+      
+      if (!registerResponse.success) {
+        setError(registerResponse.error || 'Đăng ký thất bại');
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Send OTP to email
       await authAPI.sendOTP(formData.email);
       setOtpSent(true);
       setStep(2);
@@ -91,19 +101,15 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Verify OTP
-      await authAPI.verifyOTP(formData.email, otp);
-      
-      // OTP verified, proceed with registration
-      const { confirmPassword, ...registerData } = formData;
-      const response = await authAPI.register(registerData);
+      // Verify OTP - this will activate the user account
+      const response = await authAPI.verifyOTP(formData.email, otp);
 
       if (response.success) {
-        // Registration successful, redirect to login page
+        // OTP verified and account activated, redirect to login page
         alert('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
         router.push('/login');
       } else {
-        setError(response.error || 'Đăng ký thất bại');
+        setError('Xác thực OTP thất bại');
       }
     } catch (err: any) {
       setError(err.message || 'Mã OTP không hợp lệ hoặc đã hết hạn');
