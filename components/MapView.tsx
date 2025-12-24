@@ -39,11 +39,23 @@ export default function MapView({ userLocation, showGeofence = true, className =
       zoom: 17,
       center: center,
       mapTypeId: 'roadmap',
+      disableDefaultUI: true, // Cleaner look
+      zoomControl: true,
       styles: [
         {
           featureType: 'poi',
           elementType: 'labels',
           stylers: [{ visibility: 'off' }],
+        },
+        {
+          featureType: 'landscape',
+          elementType: 'geometry',
+          stylers: [{ color: '#f8fafc' }], // slate-50
+        },
+        {
+          featureType: 'water',
+          elementType: 'geometry',
+          stylers: [{ color: '#e0e7ff' }], // indigo-100
         },
       ],
     });
@@ -55,10 +67,10 @@ export default function MapView({ userLocation, showGeofence = true, className =
       title: config.office.name,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
-        fillColor: '#D32F2F',
+        scale: 12,
+        fillColor: '#4F46E5', // Indigo-600
         fillOpacity: 1,
-        strokeColor: '#FFD700',
+        strokeColor: '#FFFFFF',
         strokeWeight: 3,
       },
     });
@@ -66,11 +78,11 @@ export default function MapView({ userLocation, showGeofence = true, className =
     // Add geofence circle
     if (showGeofence) {
       new google.maps.Circle({
-        strokeColor: '#D32F2F',
+        strokeColor: '#4F46E5', // Indigo-600
         strokeOpacity: 0.8,
         strokeWeight: 2,
-        fillColor: '#D32F2F',
-        fillOpacity: 0.2,
+        fillColor: '#4F46E5', // Indigo-600
+        fillOpacity: 0.15,
         map: map,
         center: center,
         radius: config.office.radius,
@@ -85,11 +97,11 @@ export default function MapView({ userLocation, showGeofence = true, className =
         title: 'Vị trí của bạn',
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: '#4CAF50',
+          scale: 10,
+          fillColor: '#10B981', // Emerald-500
           fillOpacity: 1,
           strokeColor: '#FFFFFF',
-          strokeWeight: 2,
+          strokeWeight: 3,
         },
       });
     }
@@ -97,14 +109,19 @@ export default function MapView({ userLocation, showGeofence = true, className =
 
   if (mapError) {
     return (
-      <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`bg-slate-100 rounded-xl flex items-center justify-center border border-slate-200 ${className}`}>
         <div className="text-center p-8">
-          <p className="text-red-600 font-medium">{mapError}</p>
-          <p className="text-sm text-gray-600 mt-2">Hiển thị bản đồ tĩnh</p>
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 text-red-500">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p className="text-slate-900 font-medium">{mapError}</p>
+          <p className="text-sm text-slate-500 mt-1">Vui lòng kiểm tra cấu hình Google Maps API</p>
         </div>
       </div>
     );
   }
 
-  return <div ref={mapRef} className={`rounded-lg shadow-inner ${className}`} />;
+  return <div ref={mapRef} className={`rounded-xl shadow-sm border border-slate-200 overflow-hidden ${className}`} />;
 }

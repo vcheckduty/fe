@@ -103,10 +103,9 @@ export default function OTPInput({ length = 6, onComplete, disabled = false }: O
       setOtp(newOtp);
       
       // Focus last filled input
-      const lastIndex = Math.min(digits.length, length - 1);
+      const lastIndex = Math.min(digits.length - 1, length - 1);
       inputRefs.current[lastIndex]?.focus();
-      
-      // Check if complete
+
       if (newOtp.every(digit => digit !== '')) {
         onComplete(newOtp.join(''));
       }
@@ -114,30 +113,28 @@ export default function OTPInput({ length = 6, onComplete, disabled = false }: O
   };
 
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex gap-2 sm:gap-3 justify-center">
       {otp.map((digit, index) => (
         <input
           key={index}
-          ref={(el) => {
-            inputRefs.current[index] = el;
-          }}
+          ref={el => { inputRefs.current[index] = el }}
           type="text"
           inputMode="numeric"
           maxLength={1}
           value={digit}
-          onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
+          onChange={e => handleChange(index, e.target.value)}
+          onKeyDown={e => handleKeyDown(index, e)}
           onPaste={handlePaste}
           disabled={disabled}
           className={`
-            w-12 h-14 text-center text-2xl font-bold
-            border-2 rounded-lg
-            transition-all duration-200
-            ${digit ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
-            ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'hover:border-blue-400'}
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-xl border-2 outline-none transition-all duration-200
+            ${digit 
+              ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm shadow-indigo-200' 
+              : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300'
+            }
+            focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 focus:bg-white
+            disabled:opacity-50 disabled:cursor-not-allowed
           `}
-          aria-label={`OTP digit ${index + 1}`}
         />
       ))}
     </div>

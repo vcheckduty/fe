@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { attendanceAPI, officeAPI } from '@/lib/api';
 import type { Attendance, Office } from '@/types';
-import Image from 'next/image';
+import Logo from '@/components/Logo';
+import StatCard from '@/components/StatCard';
+import StatusBadge from '@/components/StatusBadge';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -32,38 +34,25 @@ export default function DashboardPage() {
 
   const fetchOffices = async () => {
     try {
-      console.log('🔍 User officeId:', user?.officeId, 'Type:', typeof user?.officeId);
-      
-      // Chỉ fetch office nếu user có officeId
       if (!user?.officeId) {
-        console.log('⚠️ User không có officeId');
         setOffices([]);
         return;
       }
 
       const response = await officeAPI.getAll();
       if (response.success) {
-        console.log('📋 All offices:', response.data.offices.map((o: Office) => ({
-          id: o._id || o.id,
-          name: o.name
-        })));
-        
-        // Chỉ lấy office mà user được gán
         const userOffice = response.data.offices.find(
           (o: Office) => {
             const officeId = o._id || o.id;
             const match = officeId === user.officeId || String(officeId) === String(user.officeId);
-            console.log(`Comparing office ${officeId} with user officeId ${user.officeId}:`, match);
             return match && o.isActive;
           }
         );
         
         if (userOffice) {
-          console.log('✅ Found user office:', userOffice.name);
           setOffices([userOffice]);
           setSelectedOffice(userOffice._id || userOffice.id || '');
         } else {
-          console.log('❌ Không tìm thấy office của user');
           setOffices([]);
         }
       }
@@ -130,10 +119,10 @@ export default function DashboardPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Đang tải dữ liệu...</p>
         </div>
       </div>
     );
@@ -144,198 +133,230 @@ export default function DashboardPage() {
   const selectedOfficeData = offices.find(o => (o._id || o.id) === selectedOffice);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10">
-                <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">V-CHECK</h1>
-                <p className="text-sm text-gray-500">{user.fullName} • {user.role}</p>
-              </div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Modern Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <Logo size="md" />
+              <div className="hidden md:block w-px h-6 bg-slate-200"></div>
+              <h1 className="hidden md:block text-lg font-semibold text-slate-800">
+                Dashboard
+              </h1>
             </div>
-            <div className="flex items-center gap-3">
-              {(user.role === 'admin' || user.role === 'supervisor') && (
-                <button
-                  onClick={() => router.push('/offices')}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+            
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-200">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <p className="text-sm font-medium text-slate-700">
+                  {user.fullName} <span className="text-slate-400 mx-1">|</span> <span className="text-indigo-600">{user.role}</span>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {(user.role === 'admin' || user.role === 'supervisor') && (
+                  <button
+                    onClick={() => router.push('/offices')}
+                    className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="Quản lý trụ sở"
+                  >
+                    <span className="text-xl">🏢</span>
+                  </button>
+                )}
+                {user.role === 'admin' && (
+                  <button
+                    onClick={() => router.push('/users')}
+                    className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="Quản lý người dùng"
+                  >
+                    <span className="text-xl">👥</span>
+                  </button>
+                )}
+                <button 
+                  onClick={logout} 
+                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Đăng xuất"
                 >
-                  Quản lý Trụ sở
+                  <span className="text-xl">🚪</span>
                 </button>
-              )}
-              {user.role === 'admin' && (
-                <button
-                  onClick={() => router.push('/users')}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                >
-                  Quản lý Users
-                </button>
-              )}
-              <button onClick={logout} className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">
-                Đăng xuất
-              </button>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Check-in Section - Only for Officers */}
         {user.role === 'officer' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Check-in GPS</h2>
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
           
-          {/* Office Selector */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Chọn trụ sở:
-            </label>
-            <select
-              value={selectedOffice}
-              onChange={(e) => setSelectedOffice(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-medium bg-white"
-            >
-              {offices.length === 0 && <option value="">Chưa có trụ sở nào</option>}
-              {offices.map((office) => (
-                <option key={office._id || office.id} value={office._id || office.id}>
-                  {office.name} - {office.address} (Bán kính: {office.radius}m)
-                </option>
-              ))}
-            </select>
-            {selectedOfficeData && (
-              <p className="text-xs text-gray-500 mt-2">
-                📍 {selectedOfficeData.location.lat}, {selectedOfficeData.location.lng} • Bán kính: {selectedOfficeData.radius}m
-              </p>
-            )}
-          </div>
-          
-          {checkInMessage && (
-            <div className={`mb-4 p-4 rounded-lg flex items-start gap-3 ${
-              checkInMessage.includes('successful') || checkInMessage.includes('thành công')
-                ? 'bg-green-50 border border-green-200'
-                : 'bg-red-50 border border-red-200'
-            }`}>
-              <span className="text-xl">{checkInMessage.includes('successful') || checkInMessage.includes('thành công') ? '✓' : '⚠️'}</span>
-              <p className={`text-sm flex-1 ${
-                checkInMessage.includes('successful') || checkInMessage.includes('thành công')
-                  ? 'text-green-700'
-                  : 'text-red-700'
-              }`}>
-                {checkInMessage}
-              </p>
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl shadow-sm">
+                  📍
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Check-in GPS</h2>
+                  <p className="text-slate-500">Xác thực vị trí và chấm công</p>
+                </div>
+              </div>
+              
+              <div className="flex-1 max-w-md">
+                <select
+                  value={selectedOffice}
+                  onChange={(e) => setSelectedOffice(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none font-medium text-slate-700"
+                >
+                  {offices.length === 0 && <option value="">⚠️ Chưa có trụ sở nào</option>}
+                  {offices.map((office) => (
+                    <option key={office._id || office.id} value={office._id || office.id}>
+                      🏢 {office.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          )}
-
-          <button
-            onClick={handleCheckIn}
-            disabled={isCheckingIn || !selectedOffice}
-            className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-          >
-            {isCheckingIn ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="animate-spin">⏳</span>
-                Đang check-in...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                📍 Check-in ngay
-              </span>
+            
+            {selectedOfficeData && (
+              <div className="flex items-center gap-6 mb-6 text-sm text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100 inline-flex">
+                <div className="flex items-center gap-2">
+                  <span className="text-indigo-500">📍</span>
+                  <span>{selectedOfficeData.location.lat}, {selectedOfficeData.location.lng}</span>
+                </div>
+                <div className="w-px h-4 bg-slate-300"></div>
+                <div className="flex items-center gap-2">
+                  <span className="text-indigo-500">📏</span>
+                  <span>Bán kính: <span className="font-semibold text-slate-700">{selectedOfficeData.radius}m</span></span>
+                </div>
+                <div className="w-px h-4 bg-slate-300"></div>
+                <div className="flex items-center gap-2">
+                  <span className="text-indigo-500">🏠</span>
+                  <span>{selectedOfficeData.address}</span>
+                </div>
+              </div>
             )}
-          </button>
+            
+            {checkInMessage && (
+              <div className={`mb-6 p-4 rounded-xl flex items-start gap-3 border ${
+                checkInMessage.includes('successful') || checkInMessage.includes('thành công')
+                  ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
+                  : 'bg-red-50 border-red-100 text-red-700'
+              }`}>
+                <span className="text-xl">{checkInMessage.includes('successful') || checkInMessage.includes('thành công') ? '✓' : '⚠️'}</span>
+                <p className="font-medium">{checkInMessage}</p>
+              </div>
+            )}
+
+            <button
+              onClick={handleCheckIn}
+              disabled={isCheckingIn || !selectedOffice}
+              className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl transition-all hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3"
+            >
+              {isCheckingIn ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Đang xử lý...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-xl">⚡</span>
+                  <span>Check-in Ngay</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600">Tổng check-in</p>
-              <span className="text-2xl">📊</span>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{records.length}</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600">Hợp lệ</p>
-              <span className="text-2xl">✓</span>
-            </div>
-            <p className="text-3xl font-bold text-green-600">{validRecords}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {records.length > 0 ? ((validRecords / records.length) * 100).toFixed(1) : 0}%
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600">Không hợp lệ</p>
-              <span className="text-2xl">✗</span>
-            </div>
-            <p className="text-3xl font-bold text-red-600">{invalidRecords}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {records.length > 0 ? ((invalidRecords / records.length) * 100).toFixed(1) : 0}%
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard
+            title="TỔNG SỐ"
+            value={records.length}
+            icon="📊"
+            color="blue"
+          />
+          <StatCard
+            title="HỢP LỆ"
+            value={validRecords}
+            icon="✓"
+            color="green"
+          />
+          <StatCard
+            title="KHÔNG HỢP LỆ"
+            value={invalidRecords}
+            icon="✗"
+            color="red"
+          />
         </div>
 
         {/* Attendance Records */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Lịch sử check-in</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Lịch sử điểm danh</h2>
+            <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+              {records.length} bản ghi
+            </span>
+          </div>
           
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Đang tải...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-500 border-t-transparent mx-auto mb-3"></div>
+              <p className="text-slate-500 text-sm">Đang tải dữ liệu...</p>
             </div>
           ) : records.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">Chưa có dữ liệu check-in</div>
+            <div className="text-center py-16">
+              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                📭
+              </div>
+              <p className="text-slate-900 font-medium">Chưa có dữ liệu</p>
+              <p className="text-slate-500 text-sm mt-1">Lịch sử điểm danh sẽ xuất hiện tại đây</p>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="divide-y divide-slate-100">
               {records.map((record) => (
                 <div 
                   key={record._id}
-                  className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition"
+                  className="p-4 sm:p-6 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                        {record.officerName.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">{record.officerName}</p>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
+                      {record.officerName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">{record.officerName}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-slate-500">
                         {record.officeName && (
-                          <p className="text-xs text-blue-600 font-medium flex items-center gap-1">
-                            🏢 {record.officeName}
-                          </p>
+                          <span className="flex items-center gap-1">
+                            <span>🏢</span> {record.officeName}
+                          </span>
                         )}
-                        <p className="text-xs text-gray-500">
-                          📍 {record.location.lat.toFixed(4)}, {record.location.lng.toFixed(4)}
-                        </p>
+                        <span className="flex items-center gap-1">
+                          <span>📍</span>
+                          {record.location.lat.toFixed(5)}, {record.location.lng.toFixed(5)}
+                        </span>
                       </div>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        record.status === 'Valid'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {record.status === 'Valid' ? 'Hợp lệ' : 'Không hợp lệ'}
-                    </span>
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm border-t border-gray-100 pt-3">
-                    <span className="text-gray-600">
-                      ⏰ {new Date(record.timestamp).toLocaleString('vi-VN')}
-                    </span>
-                    <span className={`font-semibold ${record.distance <= 50 ? 'text-green-600' : 'text-red-600'}`}>
-                      📏 {record.distance}m
-                    </span>
+                  <div className="flex items-center gap-4 pl-14 sm:pl-0">
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-slate-900">
+                        {new Date(record.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {new Date(record.timestamp).toLocaleDateString('vi-VN')}
+                      </p>
+                    </div>
+                    
+                    <StatusBadge status={record.status} />
                   </div>
                 </div>
               ))}

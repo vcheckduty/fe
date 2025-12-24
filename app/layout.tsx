@@ -14,8 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "V-Check | Police Attendance System",
-  description: "GPS-based attendance system for police officers",
+  title: "V-Check | Police GPS Attendance System",
+  description: "Modern GPS-based attendance system for police departments",
+  icons: {
+    icon: [
+      { url: '/image/logoson.png', type: 'image/png' }
+    ],
+    apple: '/image/logoson.png',
+  },
 };
 
 export default function RootLayout({

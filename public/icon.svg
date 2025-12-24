@@ -1,0 +1,50 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#gradientBg)" />
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="gradientBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradientCheck" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield Shape -->
+  <path
+    d="M256 80 L360 130 L360 230 Q360 330 256 400 Q152 330 152 230 L152 130 Z"
+    fill="white"
+    fill-opacity="0.15"
+  />
+  
+  <!-- GPS Pin with Checkmark -->
+  <g transform="translate(256, 230)">
+    <!-- Shadow -->
+    <ellipse cx="0" cy="30" rx="60" ry="15" fill="url(#gradientCheck)" opacity="0.3" />
+    
+    <!-- Pin Shape -->
+    <path
+      d="M0 -75 Q-40 -75 -40 -40 Q-40 0 0 75 Q40 0 40 -40 Q40 -75 0 -75 Z"
+      fill="url(#gradientCheck)"
+      stroke="white"
+      stroke-width="8"
+    />
+    
+    <!-- Checkmark -->
+    <path
+      d="M-15 -40 L-5 -30 L15 -55"
+      fill="none"
+      stroke="white"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+  
+  <!-- Outer Ring -->
+  <circle cx="256" cy="256" r="240" fill="none" stroke="white" stroke-width="8" opacity="0.3" />
+</svg>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { authAPI } from '@/lib/api';
-import Image from 'next/image';
+import Logo from '@/components/Logo';
 import OTPInput from '@/components/OTPInput';
 
 export default function RegisterPage() {
@@ -143,83 +143,100 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600 to-green-800 p-12 flex-col justify-between">
-        <div className="flex items-center gap-3 text-white">
-          <div className="relative w-12 h-12">
-            <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
-          </div>
-          <span className="text-2xl font-bold">V-CHECK</span>
+    <div className="min-h-screen flex bg-white">
+      {/* Left Side - Modern Abstract Design */}
+      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 relative overflow-hidden items-center justify-center p-12">
+        {/* Abstract Shapes */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-3xl opacity-50 animate-float"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-3xl opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-[40%] left-[40%] w-[20%] h-[20%] bg-pink-500 rounded-full blur-3xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
         </div>
         
-        <div className="text-white">
-          <h1 className="text-4xl font-bold mb-6">
-            Tham gia cùng chúng tôi
+        <div className="relative z-10 max-w-lg text-white">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="bg-white/20 backdrop-blur-md p-2 rounded-lg">
+              <Logo size="md" className="text-white" />
+            </div>
+            <span className="text-2xl font-bold tracking-tight">V-CHECK</span>
+          </div>
+          
+          <h1 className="text-5xl font-bold leading-tight mb-6">
+            Tham gia <br />
+            <span className="text-indigo-200">Cộng đồng V-Check</span>
           </h1>
-          <p className="text-xl text-green-100 mb-8">
-            Trải nghiệm hệ thống quản lý điểm danh hiện đại và chuyên nghiệp
+          
+          <p className="text-lg text-indigo-100 mb-12 leading-relaxed">
+            Trải nghiệm hệ thống quản lý điểm danh hiện đại, minh bạch và hiệu quả ngay hôm nay.
           </p>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>✓</span>
+          
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10">
+                <span className="text-2xl">✓</span>
               </div>
-              <span className="text-green-50">Miễn phí sử dụng</span>
+              <div>
+                <p className="font-semibold text-lg">Miễn phí hoàn toàn</p>
+                <p className="text-sm text-indigo-200">Không giới hạn tính năng cơ bản</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>⚡</span>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10">
+                <span className="text-2xl">⚡</span>
               </div>
-              <span className="text-green-50">Thiết lập nhanh chóng</span>
+              <div>
+                <p className="font-semibold text-lg">Thiết lập nhanh chóng</p>
+                <p className="text-sm text-indigo-200">Chỉ mất vài phút để bắt đầu</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>🎯</span>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10">
+                <span className="text-2xl">🎯</span>
               </div>
-              <span className="text-green-50">Dễ dàng sử dụng</span>
+              <div>
+                <p className="font-semibold text-lg">Giao diện thân thiện</p>
+                <p className="text-sm text-indigo-200">Dễ dàng sử dụng trên mọi thiết bị</p>
+              </div>
             </div>
           </div>
         </div>
-
-        <p className="text-green-200 text-sm">
+        
+        <div className="absolute bottom-8 left-12 text-indigo-200 text-sm">
           © 2025 V-Check System. All rights reserved.
-        </p>
+        </div>
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto bg-white">
         <div className="w-full max-w-md my-8">
           {/* Mobile Logo */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="relative w-12 h-12">
-                <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">V-CHECK</span>
+          <div className="lg:hidden text-center mb-10">
+            <div className="inline-flex items-center justify-center gap-3 mb-2">
+              <Logo size="lg" />
+              <span className="text-2xl font-bold text-slate-900">V-CHECK</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+          <div className="bg-white">
             {step === 1 ? (
               // Step 1: Registration Form
               <>
                 <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Đăng ký</h2>
-                  <p className="text-gray-600">Tạo tài khoản V-Check mới</p>
+                  <h2 className="text-3xl font-bold text-slate-900 mb-2">Đăng ký tài khoản</h2>
+                  <p className="text-slate-500">Điền thông tin để tạo tài khoản mới</p>
                 </div>
 
                 {error && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 animate-fade-in">
                     <span className="text-red-500 text-xl">⚠️</span>
                     <p className="text-sm text-red-600 flex-1">{error}</p>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
                     Tên đăng nhập *
                   </label>
                   <input
@@ -229,13 +246,13 @@ export default function RegisterPage() {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                    className="input"
                     placeholder="username"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 mb-2">
                     Họ và tên *
                   </label>
                   <input
@@ -245,14 +262,14 @@ export default function RegisterPage() {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                    className="input"
                     placeholder="Nguyễn Văn A"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                   Email *
                 </label>
                 <input
@@ -262,15 +279,15 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                  className="input"
                   placeholder="email@example.com"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="badgeNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    Số hiệu
+                  <label htmlFor="badgeNumber" className="block text-sm font-medium text-slate-700 mb-2">
+                    Mã nhân viên
                   </label>
                   <input
                     id="badgeNumber"
@@ -278,13 +295,13 @@ export default function RegisterPage() {
                     type="text"
                     value={formData.badgeNumber}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-                    placeholder="A001"
+                    className="input"
+                    placeholder="NV001"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="department" className="block text-sm font-medium text-slate-700 mb-2">
                     Phòng ban
                   </label>
                   <input
@@ -293,15 +310,15 @@ export default function RegisterPage() {
                     type="text"
                     value={formData.department}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
-                    placeholder="PC01"
+                    className="input"
+                    placeholder="Kinh doanh"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                     Mật khẩu *
                   </label>
                   <input
@@ -311,13 +328,13 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                    className="input"
                     placeholder="Min. 6 ký tự"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
                     Xác nhận *
                   </label>
                   <input
@@ -327,7 +344,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+                    className="input"
                     placeholder="Nhập lại"
                   />
                 </div>
@@ -336,27 +353,32 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm mt-6"
+                className="btn btn-primary w-full py-3.5 text-base shadow-indigo-500/20 hover:shadow-indigo-500/30 mt-4"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span>
-                    Đang gửi mã...
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Đang xử lý...
                   </span>
                 ) : (
-                  'Tiếp tục'
+                  <span className="flex items-center justify-center gap-2">
+                    Tiếp tục
+                  </span>
                 )}
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+            <div className="mt-8 pt-6 border-t border-slate-100">
+              <p className="text-center text-slate-600">
                 Đã có tài khoản?{' '}
                 <button
                   onClick={() => router.push('/login')}
-                  className="text-green-600 hover:text-green-700 font-semibold"
+                  className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
                 >
-                  Đăng nhập
+                  Đăng nhập ngay
                 </button>
               </p>
             </div>
@@ -367,29 +389,28 @@ export default function RegisterPage() {
             <div className="mb-8">
               <button
                 onClick={handleBackToForm}
-                className="text-gray-600 hover:text-gray-900 mb-4 flex items-center gap-2"
+                className="text-slate-500 hover:text-indigo-600 mb-6 flex items-center gap-2 font-medium transition-colors"
               >
                 <span>←</span> Quay lại
               </button>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Xác thực Email</h2>
-              <p className="text-gray-600">
-                Nhập mã 6 số đã được gửi đến
-                <br />
-                <span className="font-semibold text-gray-900">{formData.email}</span>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Xác thực Email</h2>
+              <p className="text-slate-600">
+                Nhập mã 6 số đã được gửi đến email:
               </p>
+              <p className="font-medium text-indigo-600 mt-1">{formData.email}</p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 animate-fade-in">
                 <span className="text-red-500 text-xl">⚠️</span>
                 <p className="text-sm text-red-600 flex-1">{error}</p>
               </div>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
-                  Mã OTP
+                <label className="block text-sm font-medium text-slate-700 mb-4 text-center">
+                  Nhập mã xác thực
                 </label>
                 <OTPInput
                   length={6}
@@ -398,16 +419,21 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div className="text-center">
+              <div className="text-center p-4 bg-indigo-50 rounded-xl border border-indigo-100">
                 {countdown > 0 ? (
-                  <p className="text-sm text-gray-600">
-                    Mã sẽ hết hạn sau{' '}
-                    <span className="font-semibold text-green-600">
-                      {formatTime(countdown)}
-                    </span>
-                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-sm text-indigo-800">
+                      Mã sẽ hết hạn sau{' '}
+                      <span className="font-bold">
+                        {formatTime(countdown)}
+                      </span>
+                    </p>
+                  </div>
                 ) : (
-                  <p className="text-sm text-red-600">Mã OTP đã hết hạn</p>
+                  <p className="text-sm text-red-600 font-semibold">⚠️ Mã OTP đã hết hạn</p>
                 )}
               </div>
 
@@ -416,14 +442,14 @@ export default function RegisterPage() {
                   <button
                     onClick={handleResendOTP}
                     disabled={isLoading}
-                    className="text-green-600 hover:text-green-700 font-semibold text-sm disabled:opacity-50"
+                    className="btn btn-primary w-full"
                   >
                     Gửi lại mã OTP
                   </button>
                 ) : (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500">
                     Chưa nhận được mã?{' '}
-                    <span className="text-gray-400">
+                    <span className="text-slate-400">
                       Gửi lại sau {formatTime(countdown)}
                     </span>
                   </p>
@@ -432,8 +458,11 @@ export default function RegisterPage() {
 
               {isLoading && (
                 <div className="text-center">
-                  <span className="text-sm text-gray-600 flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span>
+                  <span className="text-sm text-slate-600 flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                     Đang xác thực...
                   </span>
                 </div>
@@ -443,9 +472,11 @@ export default function RegisterPage() {
         )}
           </div>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-xs text-slate-500 mt-8">
             Bằng cách đăng ký, bạn đồng ý với{' '}
-            <a href="#" className="text-green-600 hover:underline">Điều khoản sử dụng</a>
+            <a href="#" className="text-indigo-600 hover:underline font-medium">Điều khoản sử dụng</a>
+            {' '}và{' '}
+            <a href="#" className="text-indigo-600 hover:underline font-medium">Chính sách bảo mật</a>
           </p>
         </div>
       </div>

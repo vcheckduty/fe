@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { authAPI } from '@/lib/api';
-import Image from 'next/image';
+import Logo from '@/components/Logo';
 import OTPInput from '@/components/OTPInput';
 
 export default function LoginPage() {
@@ -103,21 +103,23 @@ export default function LoginPage() {
 
   if (showOTP) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md animate-scale-in border border-slate-100">
           <div className="text-center mb-8">
-            <div className="relative w-16 h-16 mx-auto mb-4">
-              <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
+            <div className="flex justify-center mb-6">
+              <Logo size="lg" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Kích hoạt tài khoản</h2>
-            <p className="text-sm text-gray-600">
-              Nhập mã OTP đã được gửi đến email: <strong>{userEmail}</strong>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Kích hoạt tài khoản</h2>
+            <p className="text-slate-600">
+              Mã OTP đã được gửi đến email:
             </p>
+            <p className="font-medium text-indigo-600 mt-1">{userEmail}</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
+              <span className="text-red-500">⚠️</span>
+              <p className="text-sm text-red-600 flex-1">{error}</p>
             </div>
           )}
 
@@ -127,12 +129,13 @@ export default function LoginPage() {
             disabled={isLoading}
           />
 
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <button
               onClick={() => setShowOTP(false)}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium transition-colors"
             >
-              ← Quay lại đăng nhập
+              <span>←</span>
+              <span>Quay lại đăng nhập</span>
             </button>
           </div>
         </div>
@@ -141,140 +144,143 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 p-12 flex-col justify-between">
-        <div className="flex items-center gap-3 text-white">
-          <div className="relative w-12 h-12">
-            <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
-          </div>
-          <span className="text-2xl font-bold">V-CHECK</span>
+    <div className="min-h-screen flex bg-white">
+      {/* Left Side - Modern Abstract Design */}
+      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 relative overflow-hidden items-center justify-center p-12">
+        {/* Abstract Shapes */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-3xl opacity-50 animate-float"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-3xl opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-[40%] left-[40%] w-[20%] h-[20%] bg-pink-500 rounded-full blur-3xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
         </div>
         
-        <div className="text-white">
-          <h1 className="text-4xl font-bold mb-6">
-            Chào mừng bạn trở lại
+        <div className="relative z-10 max-w-lg text-white">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="bg-white/20 backdrop-blur-md p-2 rounded-lg">
+              <Logo size="md" className="text-white" />
+            </div>
+            <span className="text-2xl font-bold tracking-tight">V-CHECK</span>
+          </div>
+          
+          <h1 className="text-5xl font-bold leading-tight mb-6">
+            Quản lý điểm danh <br />
+            <span className="text-indigo-200">Thông minh & Hiệu quả</span>
           </h1>
-          <p className="text-xl text-blue-100 mb-8">
-            Hệ thống quản lý điểm danh GPS thông minh cho doanh nghiệp hiện đại
+          
+          <p className="text-lg text-indigo-100 mb-12 leading-relaxed">
+            Hệ thống V-Check giúp tối ưu hóa quy trình quản lý nhân sự với công nghệ định vị GPS chính xác và bảo mật cao.
           </p>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>📍</span>
-              </div>
-              <span className="text-blue-50">Định vị GPS chính xác</span>
+          
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+              <div className="text-2xl mb-2">📍</div>
+              <h3 className="font-semibold mb-1">GPS Chính xác</h3>
+              <p className="text-sm text-indigo-200">Định vị thời gian thực</p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>🔒</span>
-              </div>
-              <span className="text-blue-50">Bảo mật tuyệt đối</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <span>📊</span>
-              </div>
-              <span className="text-blue-50">Báo cáo chi tiết</span>
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+              <div className="text-2xl mb-2">🔒</div>
+              <h3 className="font-semibold mb-1">Bảo mật cao</h3>
+              <p className="text-sm text-indigo-200">Mã hóa dữ liệu 256-bit</p>
             </div>
           </div>
         </div>
-
-        <p className="text-blue-200 text-sm">
+        
+        <div className="absolute bottom-8 left-12 text-indigo-200 text-sm">
           © 2025 V-Check System. All rights reserved.
-        </p>
+        </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      {/* Right Side - Clean Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="relative w-12 h-12">
-                <Image src="/image/logoson.png" alt="Logo" fill className="object-contain" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">V-CHECK</span>
+          <div className="lg:hidden text-center mb-10">
+            <div className="inline-flex items-center justify-center gap-3 mb-2">
+              <Logo size="lg" />
+              <span className="text-2xl font-bold text-slate-900">V-CHECK</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Đăng nhập</h2>
-              <p className="text-gray-600">Truy cập vào hệ thống V-Check</p>
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">Chào mừng trở lại</h2>
+            <p className="text-slate-500">Vui lòng nhập thông tin đăng nhập để tiếp tục</p>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 animate-fade-in">
+              <span className="text-red-500">⚠️</span>
+              <p className="text-sm text-red-600 flex-1">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
+                Tên đăng nhập
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="input"
+                placeholder="Nhập tên đăng nhập của bạn"
+              />
             </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                <span className="text-red-500 text-xl">⚠️</span>
-                <p className="text-sm text-red-600 flex-1">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tên đăng nhập
-                </label>
-                <input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  placeholder="Nhập tên đăng nhập"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                   Mật khẩu
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  placeholder="Nhập mật khẩu"
-                />
+                <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                  Quên mật khẩu?
+                </a>
               </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span>
-                    Đang xử lý...
-                  </span>
-                ) : (
-                  'Đăng nhập'
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Chưa có tài khoản?{' '}
-                <button
-                  onClick={() => router.push('/register')}
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
-                >
-                  Đăng ký ngay
-                </button>
-              </p>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input"
+                placeholder="••••••••"
+              />
             </div>
-          </div>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Bằng cách đăng nhập, bạn đồng ý với{' '}
-            <a href="#" className="text-blue-600 hover:underline">Điều khoản sử dụng</a>
-          </p>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn btn-primary w-full py-3.5 text-base shadow-indigo-500/20 hover:shadow-indigo-500/30"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Đang xử lý...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  Đăng nhập
+                </span>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-slate-600">
+              Chưa có tài khoản?{' '}
+              <button
+                onClick={() => router.push('/register')}
+                className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
+              >
+                Đăng ký ngay
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>
