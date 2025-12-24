@@ -129,10 +129,10 @@ export default function OTPInput({ length = 6, onComplete, disabled = false }: O
           className={`
             w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold rounded-xl border-2 outline-none transition-all duration-200
             ${digit 
-              ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm shadow-indigo-200' 
+              ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm shadow-orange-200' 
               : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300'
             }
-            focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 focus:bg-white
+            focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 focus:bg-white
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
         />

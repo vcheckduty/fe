@@ -113,7 +113,7 @@ export default function LoginPage() {
             <p className="text-slate-600">
               Mã OTP đã được gửi đến email:
             </p>
-            <p className="font-medium text-indigo-600 mt-1">{userEmail}</p>
+            <p className="font-medium text-orange-600 mt-1">{userEmail}</p>
           </div>
 
           {error && (
@@ -132,7 +132,7 @@ export default function LoginPage() {
           <div className="mt-8 text-center">
             <button
               onClick={() => setShowOTP(false)}
-              className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-orange-600 font-medium transition-colors"
             >
               <span>←</span>
               <span>Quay lại đăng nhập</span>
@@ -146,10 +146,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Left Side - Modern Abstract Design */}
-      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 relative overflow-hidden items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-orange-600 relative overflow-hidden items-center justify-center p-12">
         {/* Abstract Shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-3xl opacity-50 animate-float"></div>
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500 rounded-full blur-3xl opacity-50 animate-float"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-3xl opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
           <div className="absolute top-[40%] left-[40%] w-[20%] h-[20%] bg-pink-500 rounded-full blur-3xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
         </div>
@@ -164,10 +164,10 @@ export default function LoginPage() {
           
           <h1 className="text-5xl font-bold leading-tight mb-6">
             Quản lý điểm danh <br />
-            <span className="text-indigo-200">Thông minh & Hiệu quả</span>
+            <span className="text-orange-200">Thông minh & Hiệu quả</span>
           </h1>
           
-          <p className="text-lg text-indigo-100 mb-12 leading-relaxed">
+          <p className="text-lg text-orange-100 mb-12 leading-relaxed">
             Hệ thống V-Check giúp tối ưu hóa quy trình quản lý nhân sự với công nghệ định vị GPS chính xác và bảo mật cao.
           </p>
           
@@ -175,17 +175,17 @@ export default function LoginPage() {
             <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
               <div className="text-2xl mb-2">📍</div>
               <h3 className="font-semibold mb-1">GPS Chính xác</h3>
-              <p className="text-sm text-indigo-200">Định vị thời gian thực</p>
+              <p className="text-sm text-orange-200">Định vị thời gian thực</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
               <div className="text-2xl mb-2">🔒</div>
               <h3 className="font-semibold mb-1">Bảo mật cao</h3>
-              <p className="text-sm text-indigo-200">Mã hóa dữ liệu 256-bit</p>
+              <p className="text-sm text-orange-200">Mã hóa dữ liệu 256-bit</p>
             </div>
           </div>
         </div>
         
-        <div className="absolute bottom-8 left-12 text-indigo-200 text-sm">
+        <div className="absolute bottom-8 left-12 text-orange-200 text-sm">
           © 2025 V-Check System. All rights reserved.
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function LoginPage() {
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                   Mật khẩu
                 </label>
-                <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                <a href="#" className="text-sm font-medium text-orange-600 hover:text-orange-700">
                   Quên mật khẩu?
                 </a>
               </div>
@@ -252,7 +252,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn btn-primary w-full py-3.5 text-base shadow-indigo-500/20 hover:shadow-indigo-500/30"
+              className="btn btn-primary w-full py-3.5 text-base shadow-orange-500/20 hover:shadow-orange-500/30"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -275,7 +275,7 @@ export default function LoginPage() {
               Chưa có tài khoản?{' '}
               <button
                 onClick={() => router.push('/register')}
-                className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
+                className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
               >
                 Đăng ký ngay
               </button>

@@ -109,7 +109,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Đang tải...</p>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function DashboardPage() {
     : records.filter(r => r.status === selectedFilter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 bg-pattern">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-slate-100 bg-pattern">
       {/* Header */}
       <header className="gradient-red text-white shadow-strong relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
@@ -174,7 +174,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Check-in Section */}
-        <div className="bg-white rounded-2xl shadow-strong p-6 mb-8 border-t-4 border-blue-500">
+        <div className="bg-white rounded-2xl shadow-strong p-6 mb-8 border-t-4 border-orange-500">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <span>📍</span> Check-in GPS
           </h2>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
             <select
               value={selectedOffice}
               onChange={(e) => setSelectedOffice(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gradient-to-r from-blue-50 to-indigo-50 font-medium"
+              className="w-full px-4 py-3 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-gradient-to-r from-orange-50 to-orange-50 font-medium"
             >
               {offices.length === 0 && <option value="">Chưa có trụ sở nào</option>}
               {offices.map((office) => (
@@ -216,7 +216,7 @@ export default function DashboardPage() {
           <button
             onClick={handleCheckIn}
             disabled={isCheckingIn || !selectedOffice}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {isCheckingIn ? '⏳ Đang check-in...' : '📍 Check-in ngay'}
           </button>
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                 <select 
                   value={selectedFilter}
                   onChange={(e) => setSelectedFilter(e.target.value as any)}
-                  className="text-sm border-2 border-blue-300 rounded-lg px-4 py-2 font-medium bg-gradient-to-r from-blue-50 to-indigo-50 hover:border-blue-500 focus:ring-2 focus:ring-blue-300 transition-all"
+                  className="text-sm border-2 border-orange-300 rounded-lg px-4 py-2 font-medium bg-gradient-to-r from-orange-50 to-orange-50 hover:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all"
                 >
                   <option value="all">Tất cả</option>
                   <option value="Valid">Hợp lệ</option>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
               
               {isLoading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Đang tải...</p>
                 </div>
               ) : error ? (
@@ -278,17 +278,17 @@ export default function DashboardPage() {
                   {filteredData.map((record) => (
                     <div 
                       key={record._id}
-                      className="group border-2 border-slate-200 rounded-xl p-4 hover:shadow-strong hover:border-blue-400 transition-all duration-300 bg-gradient-to-br from-white to-slate-50"
+                      className="group border-2 border-slate-200 rounded-xl p-4 hover:shadow-strong hover:border-orange-400 transition-all duration-300 bg-gradient-to-br from-white to-slate-50"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-government-navy to-blue-600 flex items-center justify-center text-white font-bold shadow-md">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-government-navy to-orange-600 flex items-center justify-center text-white font-bold shadow-md">
                             {record.officerName.charAt(0)}
                           </div>
                           <div>
                             <p className="font-bold text-government-navy">{record.officerName}</p>
                             {record.officeName && (
-                              <p className="text-xs text-blue-600 font-semibold flex items-center gap-1">
+                              <p className="text-xs text-orange-600 font-semibold flex items-center gap-1">
                                 🏢 {record.officeName}
                               </p>
                             )}

@@ -121,7 +121,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600 font-medium">Đang tải dữ liệu...</p>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
               <div className="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-200">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                 <p className="text-sm font-medium text-slate-700">
-                  {user.fullName} <span className="text-slate-400 mx-1">|</span> <span className="text-indigo-600">{user.role}</span>
+                  {user.fullName} <span className="text-slate-400 mx-1">|</span> <span className="text-orange-600">{user.role}</span>
                 </p>
               </div>
 
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 {(user.role === 'admin' || user.role === 'supervisor') && (
                   <button
                     onClick={() => router.push('/offices')}
-                    className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                     title="Quản lý trụ sở"
                   >
                     <span className="text-xl">🏢</span>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                 {user.role === 'admin' && (
                   <button
                     onClick={() => router.push('/users')}
-                    className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                     title="Quản lý người dùng"
                   >
                     <span className="text-xl">👥</span>
@@ -191,12 +191,12 @@ export default function DashboardPage() {
         {/* Check-in Section - Only for Officers */}
         {user.role === 'officer' && (
         <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
           
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl shadow-sm">
+                <div className="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-3xl shadow-sm">
                   📍
                 </div>
                 <div>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                 <select
                   value={selectedOffice}
                   onChange={(e) => setSelectedOffice(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none font-medium text-slate-700"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-slate-700"
                 >
                   {offices.length === 0 && <option value="">⚠️ Chưa có trụ sở nào</option>}
                   {offices.map((office) => (
@@ -224,17 +224,17 @@ export default function DashboardPage() {
             {selectedOfficeData && (
               <div className="flex items-center gap-6 mb-6 text-sm text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100 inline-flex">
                 <div className="flex items-center gap-2">
-                  <span className="text-indigo-500">📍</span>
+                  <span className="text-orange-500">📍</span>
                   <span>{selectedOfficeData.location.lat}, {selectedOfficeData.location.lng}</span>
                 </div>
                 <div className="w-px h-4 bg-slate-300"></div>
                 <div className="flex items-center gap-2">
-                  <span className="text-indigo-500">📏</span>
+                  <span className="text-orange-500">📏</span>
                   <span>Bán kính: <span className="font-semibold text-slate-700">{selectedOfficeData.radius}m</span></span>
                 </div>
                 <div className="w-px h-4 bg-slate-300"></div>
                 <div className="flex items-center gap-2">
-                  <span className="text-indigo-500">🏠</span>
+                  <span className="text-orange-500">🏠</span>
                   <span>{selectedOfficeData.address}</span>
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function DashboardPage() {
             <button
               onClick={handleCheckIn}
               disabled={isCheckingIn || !selectedOffice}
-              className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl transition-all hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3"
+              className="w-full sm:w-auto px-8 py-4 bg-orange-600 text-white font-bold rounded-xl transition-all hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3"
             >
               {isCheckingIn ? (
                 <>
@@ -308,7 +308,7 @@ export default function DashboardPage() {
           
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-500 border-t-transparent mx-auto mb-3"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-orange-500 border-t-transparent mx-auto mb-3"></div>
               <p className="text-slate-500 text-sm">Đang tải dữ liệu...</p>
             </div>
           ) : records.length === 0 ? (
@@ -327,7 +327,7 @@ export default function DashboardPage() {
                   className="p-4 sm:p-6 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm shrink-0">
                       {record.officerName.charAt(0)}
                     </div>
                     <div>

@@ -17,7 +17,7 @@ export default function ComponentsShowcase() {
   ];
 
   const chartData = [
-    { label: 'Jan', value: 45, color: '#6366f1' },
+    { label: 'Jan', value: 45, color: '#f97316' },
     { label: 'Feb', value: 32, color: '#f59e0b' },
     { label: 'Mar', value: 58, color: '#10b981' },
   ];
@@ -53,7 +53,7 @@ export default function ComponentsShowcase() {
           <div className="lg:col-span-6 space-y-6">
             {/* Section Header */}
             <div className="flex items-center justify-between">
-              <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 transition flex items-center gap-2">
+              <button className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/30 transition flex items-center gap-2">
                 <span>📍</span>
                 Upcoming Check-in
               </button>
@@ -76,7 +76,7 @@ export default function ComponentsShowcase() {
                     min="0" 
                     max="100" 
                     defaultValue="50"
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
                   />
                 </div>
                 <span className="text-sm font-semibold text-slate-600">3:30</span>
@@ -85,7 +85,7 @@ export default function ComponentsShowcase() {
 
             {/* Show More Button */}
             <div className="text-center">
-              <button className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-2 mx-auto">
+              <button className="text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-2 mx-auto">
                 More
                 <span className="text-xs">▼</span>
               </button>

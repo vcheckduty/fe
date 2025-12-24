@@ -145,10 +145,10 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Left Side - Modern Abstract Design */}
-      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 relative overflow-hidden items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-orange-600 relative overflow-hidden items-center justify-center p-12">
         {/* Abstract Shapes */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-3xl opacity-50 animate-float"></div>
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-500 rounded-full blur-3xl opacity-50 animate-float"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-3xl opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
           <div className="absolute top-[40%] left-[40%] w-[20%] h-[20%] bg-pink-500 rounded-full blur-3xl opacity-30 animate-float" style={{animationDelay: '4s'}}></div>
         </div>
@@ -163,10 +163,10 @@ export default function RegisterPage() {
           
           <h1 className="text-5xl font-bold leading-tight mb-6">
             Tham gia <br />
-            <span className="text-indigo-200">Cộng đồng V-Check</span>
+            <span className="text-orange-200">Cộng đồng V-Check</span>
           </h1>
           
-          <p className="text-lg text-indigo-100 mb-12 leading-relaxed">
+          <p className="text-lg text-orange-100 mb-12 leading-relaxed">
             Trải nghiệm hệ thống quản lý điểm danh hiện đại, minh bạch và hiệu quả ngay hôm nay.
           </p>
           
@@ -177,7 +177,7 @@ export default function RegisterPage() {
               </div>
               <div>
                 <p className="font-semibold text-lg">Miễn phí hoàn toàn</p>
-                <p className="text-sm text-indigo-200">Không giới hạn tính năng cơ bản</p>
+                <p className="text-sm text-orange-200">Không giới hạn tính năng cơ bản</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -186,7 +186,7 @@ export default function RegisterPage() {
               </div>
               <div>
                 <p className="font-semibold text-lg">Thiết lập nhanh chóng</p>
-                <p className="text-sm text-indigo-200">Chỉ mất vài phút để bắt đầu</p>
+                <p className="text-sm text-orange-200">Chỉ mất vài phút để bắt đầu</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -195,13 +195,13 @@ export default function RegisterPage() {
               </div>
               <div>
                 <p className="font-semibold text-lg">Giao diện thân thiện</p>
-                <p className="text-sm text-indigo-200">Dễ dàng sử dụng trên mọi thiết bị</p>
+                <p className="text-sm text-orange-200">Dễ dàng sử dụng trên mọi thiết bị</p>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="absolute bottom-8 left-12 text-indigo-200 text-sm">
+        <div className="absolute bottom-8 left-12 text-orange-200 text-sm">
           © 2025 V-Check System. All rights reserved.
         </div>
       </div>
@@ -353,7 +353,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn btn-primary w-full py-3.5 text-base shadow-indigo-500/20 hover:shadow-indigo-500/30 mt-4"
+                className="btn btn-primary w-full py-3.5 text-base shadow-orange-500/20 hover:shadow-orange-500/30 mt-4"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -376,7 +376,7 @@ export default function RegisterPage() {
                 Đã có tài khoản?{' '}
                 <button
                   onClick={() => router.push('/login')}
-                  className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
+                  className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
                 >
                   Đăng nhập ngay
                 </button>
@@ -389,7 +389,7 @@ export default function RegisterPage() {
             <div className="mb-8">
               <button
                 onClick={handleBackToForm}
-                className="text-slate-500 hover:text-indigo-600 mb-6 flex items-center gap-2 font-medium transition-colors"
+                className="text-slate-500 hover:text-orange-600 mb-6 flex items-center gap-2 font-medium transition-colors"
               >
                 <span>←</span> Quay lại
               </button>
@@ -397,7 +397,7 @@ export default function RegisterPage() {
               <p className="text-slate-600">
                 Nhập mã 6 số đã được gửi đến email:
               </p>
-              <p className="font-medium text-indigo-600 mt-1">{formData.email}</p>
+              <p className="font-medium text-orange-600 mt-1">{formData.email}</p>
             </div>
 
             {error && (
@@ -419,13 +419,13 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div className="text-center p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+              <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-100">
                 {countdown > 0 ? (
                   <div className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
-                    <p className="text-sm text-indigo-800">
+                    <p className="text-sm text-orange-800">
                       Mã sẽ hết hạn sau{' '}
                       <span className="font-bold">
                         {formatTime(countdown)}
@@ -474,9 +474,9 @@ export default function RegisterPage() {
 
           <p className="text-center text-xs text-slate-500 mt-8">
             Bằng cách đăng ký, bạn đồng ý với{' '}
-            <a href="#" className="text-indigo-600 hover:underline font-medium">Điều khoản sử dụng</a>
+            <a href="#" className="text-orange-600 hover:underline font-medium">Điều khoản sử dụng</a>
             {' '}và{' '}
-            <a href="#" className="text-indigo-600 hover:underline font-medium">Chính sách bảo mật</a>
+            <a href="#" className="text-orange-600 hover:underline font-medium">Chính sách bảo mật</a>
           </p>
         </div>
       </div>

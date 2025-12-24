@@ -10,7 +10,7 @@ export default function StatsCard({ title, value, icon, color = 'red', subtitle 
   const colorClasses = {
     red: 'bg-white border-red-100 text-red-600 shadow-sm hover:shadow-md',
     green: 'bg-white border-emerald-100 text-emerald-600 shadow-sm hover:shadow-md',
-    blue: 'bg-white border-indigo-100 text-indigo-600 shadow-sm hover:shadow-md',
+    blue: 'bg-white border-orange-100 text-orange-600 shadow-sm hover:shadow-md',
     gold: 'bg-white border-amber-100 text-amber-600 shadow-sm hover:shadow-md',
     gray: 'bg-white border-slate-100 text-slate-600 shadow-sm hover:shadow-md',
   };
@@ -18,7 +18,7 @@ export default function StatsCard({ title, value, icon, color = 'red', subtitle 
   const iconColorClasses = {
     red: 'bg-red-50 text-red-500',
     green: 'bg-emerald-50 text-emerald-500',
-    blue: 'bg-indigo-50 text-indigo-500',
+    blue: 'bg-orange-50 text-orange-500',
     gold: 'bg-amber-50 text-amber-500',
     gray: 'bg-slate-50 text-slate-500',
   };

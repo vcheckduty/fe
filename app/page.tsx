@@ -34,7 +34,7 @@ export default function HomePage() {
           <div className="relative w-24 h-24 mx-auto mb-6">
             <Image src="/image/logoson.png" alt="Logo" fill className="object-contain animate-pulse" />
           </div>
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600 font-medium">Đang tải...</p>
         </div>
       </div>
@@ -68,13 +68,13 @@ export default function HomePage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={handleLogin}
-                className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
               >
                 Đăng nhập
               </button>
               <button
                 onClick={handleRegister}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:shadow-indigo-500/40 active:scale-95"
+                className="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-xl shadow-lg shadow-orange-500/30 transition-all hover:shadow-orange-500/40 active:scale-95"
               >
                 Đăng ký ngay
               </button>
@@ -88,19 +88,19 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center relative">
             {/* Abstract Background Elements */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl -z-10 opacity-50"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-orange-50 rounded-full blur-3xl -z-10 opacity-50"></div>
             
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-8 border border-indigo-100">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 text-orange-600 text-sm font-medium mb-8 border border-orange-100">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
               </span>
               Giải pháp quản lý nhân sự 4.0
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-6 tracking-tight leading-tight">
               Quản lý điểm danh <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Thông minh & Hiệu quả</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-purple-600">Thông minh & Hiệu quả</span>
             </h1>
             
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -110,7 +110,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={handleRegister}
-                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-xl shadow-indigo-500/30 transition-all hover:shadow-indigo-500/40 hover:-translate-y-1"
+                className="w-full sm:w-auto px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl shadow-xl shadow-orange-500/30 transition-all hover:shadow-orange-500/40 hover:-translate-y-1"
               >
                 Bắt đầu miễn phí
               </button>
@@ -130,7 +130,7 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all border border-slate-100 group">
-              <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <span className="text-3xl">📍</span>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Định vị GPS chính xác</h3>
@@ -161,7 +161,7 @@ export default function HomePage() {
           </div>
 
           {/* Additional Features */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-12">
+          <div className="bg-gradient-to-br from-orange-50 to-orange-50 rounded-3xl p-12">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
               Tính năng nổi bật
             </h2>
@@ -229,10 +229,10 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-4">Sản phẩm</h3>
               <ul className="space-y-2 text-sm">
-                <li><button onClick={handleLogin} className="text-gray-600 hover:text-blue-600 transition">Đăng nhập</button></li>
-                <li><button onClick={handleRegister} className="text-gray-600 hover:text-blue-600 transition">Đăng ký</button></li>
-                <li><a href="#" className="text-gray-600 hover:text-blue-600 transition">Tính năng</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-blue-600 transition">Bảng giá</a></li>
+                <li><button onClick={handleLogin} className="text-gray-600 hover:text-orange-600 transition">Đăng nhập</button></li>
+                <li><button onClick={handleRegister} className="text-gray-600 hover:text-orange-600 transition">Đăng ký</button></li>
+                <li><a href="#" className="text-gray-600 hover:text-orange-600 transition">Tính năng</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-orange-600 transition">Bảng giá</a></li>
               </ul>
             </div>
 

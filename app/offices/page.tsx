@@ -132,7 +132,7 @@ export default function OfficesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Đang tải...</p>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function OfficesPage() {
                 </svg>
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 text-indigo-600">
+                <div className="w-8 h-8 text-orange-600">
                   <Logo />
                 </div>
                 <div>
@@ -184,7 +184,7 @@ export default function OfficesPage() {
         {/* Stats & Add Button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-4 flex items-center gap-4">
-            <div className="p-3 bg-indigo-50 rounded-lg text-indigo-600">
+            <div className="p-3 bg-orange-50 rounded-lg text-orange-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
@@ -201,7 +201,7 @@ export default function OfficesPage() {
                 resetForm();
                 setShowModal(true);
               }}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl transition shadow-sm hover:shadow-md flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -215,7 +215,7 @@ export default function OfficesPage() {
         <div className="space-y-6">
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
               <p className="text-slate-600">Đang tải dữ liệu...</p>
             </div>
           ) : error ? (
@@ -241,7 +241,7 @@ export default function OfficesPage() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 group-hover:bg-indigo-100 transition-colors">
+                      <div className="p-2 bg-orange-50 rounded-lg text-orange-600 group-hover:bg-orange-100 transition-colors">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
@@ -316,7 +316,7 @@ export default function OfficesPage() {
                     {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
                       <button
                         onClick={() => setSelectedOfficeForMembers(office)}
-                        className="flex-1 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-sm font-medium transition flex items-center justify-center gap-1"
+                        className="flex-1 px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg text-sm font-medium transition flex items-center justify-center gap-1"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -360,7 +360,7 @@ export default function OfficesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                   placeholder="VD: Trụ sở chính"
                 />
               </div>
@@ -371,7 +371,7 @@ export default function OfficesPage() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                   placeholder="Nhập địa chỉ đầy đủ..."
                 />
               </div>
@@ -388,7 +388,7 @@ export default function OfficesPage() {
                     value={formData.lat}
                     onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
                     required
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                     placeholder="VD: 16.467"
                   />
                 </div>
@@ -402,27 +402,27 @@ export default function OfficesPage() {
                     value={formData.lng}
                     onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
                     required
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                     placeholder="VD: 107.590"
                   />
                 </div>
               </div>
               
               {/* Helper text */}
-              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+              <div className="bg-orange-50 p-4 rounded-xl border border-orange-100">
                 <div className="flex gap-3">
-                  <div className="text-indigo-600 mt-0.5">
+                  <div className="text-orange-600 mt-0.5">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <p className="text-sm text-indigo-900">
+                  <p className="text-sm text-orange-900">
                     <strong>Cách lấy tọa độ:</strong> Mở{' '}
                     <a 
                       href="https://www.google.com/maps" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-indigo-700 hover:underline font-bold"
+                      className="text-orange-700 hover:underline font-bold"
                     >
                       Google Maps
                     </a>
@@ -437,7 +437,7 @@ export default function OfficesPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                   placeholder="Mô tả thêm về trụ sở..."
                 />
               </div>
@@ -447,7 +447,7 @@ export default function OfficesPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300"
+                  className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 border-gray-300"
                 />
                 <label htmlFor="isActive" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
                   Đang hoạt động
@@ -466,7 +466,7 @@ export default function OfficesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-sm"
+                  className="flex-1 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl transition shadow-sm"
                 >
                   {editingOffice ? 'Cập nhật' : 'Thêm mới'}
                 </button>

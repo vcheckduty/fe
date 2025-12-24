@@ -32,12 +32,12 @@ export default function DateCard({
       {/* Message with count */}
       {message && (
         <div className="flex items-start gap-3 mt-4">
-          <div className="w-1 h-12 bg-indigo-500 rounded-full"></div>
+          <div className="w-1 h-12 bg-orange-500 rounded-full"></div>
           <div className="flex-1">
             <p className="text-slate-600 text-base">
               {message}{' '}
               {count !== undefined && (
-                <span className="text-indigo-600 font-bold">
+                <span className="text-orange-600 font-bold">
                   {count} {countLabel}
                 </span>
               )}

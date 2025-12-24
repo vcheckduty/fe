@@ -46,8 +46,8 @@ export default function StatusBadge({ status, distance, className = '' }: Status
         };
       case 'on-mission':
         return {
-          bg: 'bg-blue-100',
-          text: 'text-blue-700',
+          bg: 'bg-orange-100',
+          text: 'text-orange-700',
           label: 'Đang công tác',
           icon: (
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

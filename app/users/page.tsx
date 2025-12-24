@@ -67,7 +67,7 @@ export default function UsersPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Đang tải...</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function UsersPage() {
                 </svg>
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 text-indigo-600">
+                <div className="w-8 h-8 text-orange-600">
                   <Logo />
                 </div>
                 <div>
@@ -123,7 +123,7 @@ export default function UsersPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -185,7 +185,7 @@ export default function UsersPage() {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="appearance-none pl-4 pr-10 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none cursor-pointer"
+                className="appearance-none pl-4 pr-10 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none cursor-pointer"
               >
                 <option value="all">Tất cả vai trò</option>
                 <option value="admin">Admin</option>
@@ -202,7 +202,7 @@ export default function UsersPage() {
 
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
               <p className="text-slate-600">Đang tải...</p>
             </div>
           ) : error ? (

@@ -68,7 +68,7 @@ export default function QueueList({
                     />
                   </div>
                 ) : (
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm ${getStatusColor(item.status)}`}>
+                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm ${getStatusColor(item.status)}`}>
                     {item.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -94,7 +94,7 @@ export default function QueueList({
           ))}
 
           {hasMore && (
-            <button className="w-full py-2 text-sm text-indigo-600 hover:text-indigo-700 font-semibold transition-colors">
+            <button className="w-full py-2 text-sm text-orange-600 hover:text-orange-700 font-semibold transition-colors">
               + Xem thêm {items.length - maxVisible} người
             </button>
           )}

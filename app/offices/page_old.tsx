@@ -122,7 +122,7 @@ export default function OfficesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Đang tải...</p>
         </div>
       </div>
@@ -130,9 +130,9 @@ export default function OfficesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-slate-100">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
+      <header className="bg-gradient-to-r from-orange-600 to-orange-800 text-white shadow-lg">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -144,7 +144,7 @@ export default function OfficesPage() {
               </button>
               <div>
                 <h1 className="text-3xl font-bold">Quản lý Trụ sở</h1>
-                <p className="text-sm text-blue-100 mt-1">{currentUser.fullName} • ADMIN</p>
+                <p className="text-sm text-orange-100 mt-1">{currentUser.fullName} • ADMIN</p>
               </div>
             </div>
             <button onClick={logout} className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
@@ -160,7 +160,7 @@ export default function OfficesPage() {
         <div className="flex justify-between items-center mb-8">
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-gray-600 text-sm">Tổng trụ sở</p>
-            <p className="text-3xl font-bold text-blue-600">{offices.length}</p>
+            <p className="text-3xl font-bold text-orange-600">{offices.length}</p>
           </div>
           <button
             onClick={() => {
@@ -179,7 +179,7 @@ export default function OfficesPage() {
 
           {isLoading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
               <p className="mt-4 text-gray-600">Đang tải...</p>
             </div>
           ) : error ? (
@@ -209,7 +209,7 @@ export default function OfficesPage() {
                   <p className="text-xs text-gray-500 mb-2">
                     Tọa độ: {office.location.lat}, {office.location.lng}
                   </p>
-                  <p className="text-sm font-semibold text-blue-600 mb-3">
+                  <p className="text-sm font-semibold text-orange-600 mb-3">
                     Bán kính: {office.radius}m
                   </p>
                   {office.description && (
@@ -218,7 +218,7 @@ export default function OfficesPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(office)}
-                      className="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm font-semibold transition"
+                      className="flex-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded text-sm font-semibold transition"
                     >
                       ✏️ Sửa
                     </button>
@@ -251,7 +251,7 @@ export default function OfficesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                   placeholder="Trụ sở Công an Quận 1"
                 />
               </div>
@@ -262,7 +262,7 @@ export default function OfficesPage() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                   placeholder="123 Đường ABC, Quận 1, TP.HCM"
                 />
               </div>
@@ -275,7 +275,7 @@ export default function OfficesPage() {
                     value={formData.lat}
                     onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                     placeholder="16.467"
                   />
                 </div>
@@ -287,7 +287,7 @@ export default function OfficesPage() {
                     value={formData.lng}
                     onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                     placeholder="107.590"
                   />
                 </div>
@@ -299,7 +299,7 @@ export default function OfficesPage() {
                   value={formData.radius}
                   onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                   placeholder="50"
                 />
               </div>
@@ -309,7 +309,7 @@ export default function OfficesPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                   placeholder="Mô tả về trụ sở..."
                 />
               </div>
@@ -319,7 +319,7 @@ export default function OfficesPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 text-blue-600"
+                  className="w-4 h-4 text-orange-600"
                 />
                 <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
                   Trạng thái hoạt động
@@ -338,7 +338,7 @@ export default function OfficesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+                  className="flex-1 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition"
                 >
                   {editingOffice ? 'Cập nhật' : 'Thêm mới'}
                 </button>

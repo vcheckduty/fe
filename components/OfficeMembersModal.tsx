@@ -157,9 +157,9 @@ export default function OfficeMembersModal({
             {!showAddMember ? (
               <button
                 onClick={() => setShowAddMember(true)}
-                className="w-full py-3 px-4 bg-white border border-dashed border-indigo-300 hover:border-indigo-500 hover:bg-indigo-50 text-indigo-600 font-medium rounded-xl transition flex items-center justify-center gap-2 group"
+                className="w-full py-3 px-4 bg-white border border-dashed border-orange-300 hover:border-orange-500 hover:bg-orange-50 text-orange-600 font-medium rounded-xl transition flex items-center justify-center gap-2 group"
               >
-                <div className="p-1 bg-indigo-100 rounded-full group-hover:bg-indigo-200 transition-colors">
+                <div className="p-1 bg-orange-100 rounded-full group-hover:bg-orange-200 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
@@ -176,7 +176,7 @@ export default function OfficeMembersModal({
                     <select
                       value={selectedUserId}
                       onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-slate-50"
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none bg-slate-50"
                     >
                       <option value="">-- Chọn nhân viên --</option>
                       {usersNotInOffice.map((user) => (
@@ -205,7 +205,7 @@ export default function OfficeMembersModal({
                     <button
                       onClick={handleAddMember}
                       disabled={isLoading || !selectedUserId}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
                     >
                       {isLoading ? 'Đang thêm...' : 'Thêm thành viên'}
                     </button>
@@ -241,7 +241,7 @@ export default function OfficeMembersModal({
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-lg">
+                        <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-lg">
                           {member.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>

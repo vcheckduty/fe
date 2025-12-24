@@ -2,9 +2,9 @@
 
 @theme {
   /* Modern SaaS Color Palette */
-  --color-primary: #6366f1; /* Indigo 500 */
-  --color-primary-dark: #4f46e5; /* Indigo 600 */
-  --color-primary-light: #818cf8; /* Indigo 400 */
+  --color-primary: #f97316; /* Orange 500 - Vàng đỏ */
+  --color-primary-dark: #ea580c; /* Orange 600 */
+  --color-primary-light: #fb923c; /* Orange 400 */
   
   --color-secondary: #ec4899; /* Pink 500 */
   
@@ -23,7 +23,7 @@
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.03);
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05);
   --shadow-float: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  --shadow-glow: 0 0 20px rgba(249, 115, 22, 0.3);
   
   /* Animations */
   --animate-float: float 6s ease-in-out infinite;
@@ -52,7 +52,7 @@
   }
   
   .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40;
+    @apply bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40;
   }
   
   .btn-secondary {
@@ -64,7 +64,7 @@
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none;
+    @apply w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none;
   }
 }
 

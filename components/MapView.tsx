@@ -55,7 +55,7 @@ export default function MapView({ userLocation, showGeofence = true, className =
         {
           featureType: 'water',
           elementType: 'geometry',
-          stylers: [{ color: '#e0e7ff' }], // indigo-100
+          stylers: [{ color: '#ffedd5' }], // orange-100
         },
       ],
     });
@@ -68,7 +68,7 @@ export default function MapView({ userLocation, showGeofence = true, className =
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: '#4F46E5', // Indigo-600
+        fillColor: '#ea580c', // Orange-600
         fillOpacity: 1,
         strokeColor: '#FFFFFF',
         strokeWeight: 3,
@@ -78,10 +78,10 @@ export default function MapView({ userLocation, showGeofence = true, className =
     // Add geofence circle
     if (showGeofence) {
       new google.maps.Circle({
-        strokeColor: '#4F46E5', // Indigo-600
+        strokeColor: '#ea580c', // Orange-600
         strokeOpacity: 0.8,
         strokeWeight: 2,
-        fillColor: '#4F46E5', // Indigo-600
+        fillColor: '#ea580c', // Orange-600
         fillOpacity: 0.15,
         map: map,
         center: center,

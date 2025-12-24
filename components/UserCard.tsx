@@ -28,7 +28,7 @@ export default function UserCard({
         {/* Avatar */}
         <div className="relative">
           {imageUrl ? (
-            <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-indigo-50 group-hover:ring-indigo-100 transition-all">
+            <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-orange-50 group-hover:ring-orange-100 transition-all">
               <Image 
                 src={imageUrl} 
                 alt={name}
@@ -38,7 +38,7 @@ export default function UserCard({
               />
             </div>
           ) : (
-            <div className="w-14 h-14 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl ring-2 ring-indigo-50 group-hover:ring-indigo-100 transition-all">
+            <div className="w-14 h-14 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xl ring-2 ring-orange-50 group-hover:ring-orange-100 transition-all">
               {name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -53,7 +53,7 @@ export default function UserCard({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-slate-900 text-base truncate group-hover:text-indigo-600 transition-colors">{name}</h3>
+          <h3 className="font-bold text-slate-900 text-base truncate group-hover:text-orange-600 transition-colors">{name}</h3>
           {subtitle && (
             <p className="text-sm text-slate-500 truncate">{subtitle}</p>
           )}
@@ -62,7 +62,7 @@ export default function UserCard({
         {/* Time/Badge */}
         {time && (
           <div className="flex-shrink-0">
-            <span className="px-3 py-1 bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600 rounded-lg text-sm font-medium transition-colors">
+            <span className="px-3 py-1 bg-slate-100 text-slate-600 group-hover:bg-orange-50 group-hover:text-orange-600 rounded-lg text-sm font-medium transition-colors">
               {time}
             </span>
           </div>
