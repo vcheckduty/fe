@@ -69,6 +69,8 @@ export interface Attendance {
   };
   checkoutDistance?: number;
   totalHours?: number;
+  checkinPhoto?: string;
+  checkoutPhoto?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

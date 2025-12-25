@@ -287,7 +287,7 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="badgeNumber" className="block text-sm font-medium text-slate-700 mb-2">
-                    Mã nhân viên
+                    Số hiệu CAND
                   </label>
                   <input
                     id="badgeNumber"
@@ -296,13 +296,13 @@ export default function RegisterPage() {
                     value={formData.badgeNumber}
                     onChange={handleChange}
                     className="input"
-                    placeholder="NV001"
+                    placeholder="CAND001"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="department" className="block text-sm font-medium text-slate-700 mb-2">
-                    Phòng ban
+                    Cơ quan
                   </label>
                   <input
                     id="department"
@@ -311,7 +311,7 @@ export default function RegisterPage() {
                     value={formData.department}
                     onChange={handleChange}
                     className="input"
-                    placeholder="Kinh doanh"
+                    placeholder="Công an TP. HCM"
                   />
                 </div>
               </div>

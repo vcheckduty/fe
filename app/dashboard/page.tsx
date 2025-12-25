@@ -8,6 +8,7 @@ import type { Attendance, Office, User } from '@/types';
 import Logo from '@/components/Logo';
 import StatCard from '@/components/StatCard';
 import StatusBadge from '@/components/StatusBadge';
+import SmartUpload from '@/components/SmartUpload';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,6 +26,8 @@ export default function DashboardPage() {
   const [checkInMessage, setCheckInMessage] = useState('');
   const [todayAttendance, setTodayAttendance] = useState<Attendance | null>(null);
   const [adminView, setAdminView] = useState<'offices' | 'officers' | 'supervisors'>('offices');
+  const [capturedPhoto, setCapturedPhoto] = useState<string>('');
+  const [previewPhoto, setPreviewPhoto] = useState<{url: string, title: string} | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -183,10 +186,12 @@ export default function DashboardPage() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
             officeId: selectedOffice,
+            photo: capturedPhoto, // Send photo if captured
           });
 
           if (response.success) {
             setCheckInMessage(response.data.message);
+            setCapturedPhoto(''); // Reset photo
             fetchAttendance();
           }
         } catch (err: any) {
@@ -225,11 +230,12 @@ export default function DashboardPage() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
             officeId: selectedOffice,
+            photo: capturedPhoto, // Send photo if captured
           });
 
           if (response.success) {
             setCheckInMessage(`Kết thúc ca làm thành công! Tổng giờ làm việc: ${response.data.totalHours} giờ`);
-            // Wait a bit then fetch to ensure DB is updated
+            setCapturedPhoto(''); // Reset photo
             setTimeout(() => {
               fetchAttendance();
             }, 500);
@@ -443,43 +449,113 @@ export default function DashboardPage() {
 
             {/* Single button that changes based on state */}
             {!todayAttendance ? (
-              // Haven't checked in yet today
-              <button
-                onClick={handleCheckIn}
-                disabled={isCheckingIn || !selectedOffice}
-                className="w-full sm:w-auto px-8 py-4 bg-orange-600 text-white font-bold rounded-xl transition-all hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
-              >
-                {isCheckingIn ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Đang xử lý...</span>
-                  </>
-                ) : (
-                  <span>Bắt đầu ca làm</span>
+              <div className="space-y-4">
+                {/* Photo capture button */}
+                {!capturedPhoto && (
+                  <SmartUpload onImageSelect={setCapturedPhoto} />
                 )}
-              </button>
+                {capturedPhoto && (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Đã chụp ảnh
+                    </div>
+                )}
+
+                {/* Preview captured photo */}
+                {capturedPhoto && (
+                  <div className="relative">
+                    <img src={capturedPhoto} alt="Preview" className="w-32 h-32 object-cover rounded-lg border-2 border-slate-200" />
+                    <button
+                      onClick={() => setCapturedPhoto('')}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
+                {/* Check-in button */}
+                <button
+                  onClick={handleCheckIn}
+                  disabled={isCheckingIn || !selectedOffice || !capturedPhoto}
+                  className="w-full sm:w-auto px-8 py-4 bg-orange-600 text-white font-bold rounded-xl transition-all hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+                >
+                  {isCheckingIn ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Đang xử lý...</span>
+                    </>
+                  ) : (
+                    <span>Bắt đầu ca làm</span>
+                  )}
+                </button>
+                {!capturedPhoto && (
+                  <p className="text-sm text-red-600 font-medium">
+                    ⚠️ Vui lòng chụp ảnh trước khi bắt đầu ca làm
+                  </p>
+                )}
+              </div>
             ) : !todayAttendance.checkoutTime ? (
-              // Checked in but haven't checked out yet
-              <button
-                onClick={handleCheckOut}
-                disabled={isCheckingOut || !selectedOffice}
-                className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl transition-all hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
-              >
-                {isCheckingOut ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Đang xử lý...</span>
-                  </>
-                ) : (
-                  <span>Kết thúc ca làm</span>
+              <div className="space-y-4">
+                {/* Photo capture button for checkout */}
+                {!capturedPhoto && (
+                  <SmartUpload onImageSelect={setCapturedPhoto} />
                 )}
-              </button>
+                {capturedPhoto && (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Đã chụp ảnh
+                    </div>
+                )}
+
+                {/* Preview captured photo */}
+                {capturedPhoto && (
+                  <div className="relative">
+                    <img src={capturedPhoto} alt="Preview" className="w-32 h-32 object-cover rounded-lg border-2 border-slate-200" />
+                    <button
+                      onClick={() => setCapturedPhoto('')}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
+                {/* Checkout button */}
+                <button
+                  onClick={handleCheckOut}
+                  disabled={isCheckingOut || !selectedOffice || !capturedPhoto}
+                  className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl transition-all hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+                >
+                  {isCheckingOut ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Đang xử lý...</span>
+                    </>
+                  ) : (
+                    <span>Kết thúc ca làm</span>
+                  )}
+                </button>
+                {!capturedPhoto && (
+                  <p className="text-sm text-red-600 font-medium">
+                    ⚠️ Vui lòng chụp ảnh trước khi kết thúc ca làm
+                  </p>
+                )}
+              </div>
             ) : (
               // Already checked in and checked out today
               <div className="w-full">
@@ -824,10 +900,33 @@ export default function DashboardPage() {
                               {record.officeName}
                             </span>
                           )}
-                          {/* <span className="flex items-center gap-1">
-                            <span>📍</span>
-                            {record.location.lat.toFixed(5)}, {record.location.lng.toFixed(5)}
-                          </span> */}
+                          {(user.role === 'supervisor' || user.role === 'admin') && (
+                            <>
+                              {record.location && (
+                                <a 
+                                  href={`https://www.google.com/maps/search/?api=1&query=${record.location.lat},${record.location.lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1 hover:text-blue-600 hover:underline cursor-pointer text-blue-500"
+                                  onClick={(e) => e.stopPropagation()}
+                                  title="Xem vị trí trên Google Maps"
+                                >
+                                  <span>📍</span>
+                                  {record.location.lat.toFixed(5)}, {record.location.lng.toFixed(5)}
+                                </a>
+                              )}
+                              {record.checkinPhoto && (
+                                <div className="relative group">
+                                  <span className="text-xs bg-slate-100 px-2 py-1 rounded border border-slate-200 cursor-help">
+                                    📷 Ảnh
+                                  </span>
+                                  <div className="hidden group-hover:block absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 p-1 bg-white rounded-lg shadow-xl border border-slate-200 w-48">
+                                    <img src={record.checkinPhoto} alt="Check-in" className="w-full h-auto rounded" />
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -845,16 +944,30 @@ export default function DashboardPage() {
                   
                   {/* Time info - always show */}
                   <div className="mt-4 pt-4 border-t border-slate-100 pl-14 grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-slate-500 mb-1">Bắt đầu</p>
-                      <p className="font-medium text-slate-900">
+                    <div 
+                      className={record.checkinPhoto ? "cursor-pointer group" : ""}
+                      onClick={() => record.checkinPhoto && setPreviewPhoto({ url: record.checkinPhoto, title: 'Ảnh Check-in' })}
+                      title={record.checkinPhoto ? "Nhấn để xem ảnh check-in" : ""}
+                    >
+                      <p className="text-slate-500 mb-1 flex items-center gap-1">
+                        Bắt đầu
+                        {record.checkinPhoto && <span className="text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">📷</span>}
+                      </p>
+                      <p className={`font-medium ${record.checkinPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
                         {new Date(record.checkinTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-slate-500 mb-1">Kết thúc</p>
+                    <div
+                      className={record.checkoutPhoto ? "cursor-pointer group" : ""}
+                      onClick={() => record.checkoutPhoto && setPreviewPhoto({ url: record.checkoutPhoto, title: 'Ảnh Check-out' })}
+                      title={record.checkoutPhoto ? "Nhấn để xem ảnh check-out" : ""}
+                    >
+                      <p className="text-slate-500 mb-1 flex items-center gap-1">
+                        Kết thúc
+                        {record.checkoutPhoto && <span className="text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">📷</span>}
+                      </p>
                       {record.checkoutTime ? (
-                        <p className="font-medium text-slate-900">
+                        <p className={`font-medium ${record.checkoutPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
                           {new Date(record.checkoutTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       ) : (
@@ -878,6 +991,38 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+
+      {/* Photo Preview Modal */}
+      {previewPhoto && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setPreviewPhoto(null)}
+        >
+          <div 
+            className="relative bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-lg text-slate-900">{previewPhoto.title}</h3>
+              <button 
+                onClick={() => setPreviewPhoto(null)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-2 bg-slate-100 flex justify-center">
+              <img 
+                src={previewPhoto.url} 
+                alt={previewPhoto.title} 
+                className="max-h-[70vh] object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

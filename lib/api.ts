@@ -183,6 +183,7 @@ export const attendanceAPI = {
     officeId: string;
     lat: number;
     lng: number;
+    photo?: string;
   }): Promise<{
     success: boolean;
     data: {
@@ -207,6 +208,7 @@ export const attendanceAPI = {
     officeId: string;
     lat: number;
     lng: number;
+    photo?: string;
   }): Promise<{
     success: boolean;
     message: string;

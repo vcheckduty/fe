@@ -8,6 +8,7 @@ export { default as ShareLinkCard } from './ShareLinkCard';
 export { default as OTPInput } from './OTPInput';
 export { default as StatCard } from './StatCard';
 export { default as StatusBadge } from './StatusBadge';
+export { default as CameraCapture } from './CameraCapture';
 
 // UI Components
 export { default as Button } from './ui/Button';
