@@ -83,14 +83,36 @@ export const authAPI = {
     username: string;
     password: string;
   }): Promise<AuthResponse> => {
-    const data = await apiFetch<AuthResponse>('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
-    if (data.success && data.data?.token) {
-      setToken(data.data.token);
+    try {
+      const data = await apiFetch<AuthResponse>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      });
+      if (data.success && data.data?.token) {
+        setToken(data.data.token);
+      }
+      return data;
+    } catch (error: any) {
+      // If it's an activation error, fetch the full response body
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      const data = await response.json();
+      
+      // Return the full response with needsActivation and email
+      if (data.needsActivation || data.error === 'Account not activated') {
+        return {
+          success: false,
+          error: data.error,
+          needsActivation: data.needsActivation,
+          email: data.email,
+        } as any;
+      }
+      
+      throw error;
     }
-    return data;
   },
 
   logout: (): void => {

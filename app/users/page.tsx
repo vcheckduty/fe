@@ -79,6 +79,17 @@ export default function UsersPage() {
     }
   };
 
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+    try {
+      await userAPI.update(userId, { role: newRole });
+      setUsers(
+        users.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      );
+    } catch (err: any) {
+      alert('Cập nhật vai trò thất bại: ' + err.message);
+    }
+  };
+
   const handleAssignOffice = (user: User) => {
     setSelectedUser(user);
     setSelectedOfficeId(user.officeId || '');
@@ -266,8 +277,8 @@ export default function UsersPage() {
                     <th className="py-3 px-6">Vai trò</th>
                     <th className="py-3 px-6">Trụ sở</th>
                     <th className="py-3 px-6">Số hiệu</th>
-                    <th className="py-3 px-6">Trạng thái</th>
-                    <th className="py-3 px-6 text-right">Hành động</th>
+                    <th className="py-3 px-6 text-center">Trạng thái</th>
+                    <th className="py-3 px-6 text-right">Xóa</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -280,17 +291,21 @@ export default function UsersPage() {
                       <td className="py-4 px-6 text-slate-600">{user.username}</td>
                       <td className="py-4 px-6 text-slate-600">{user.email}</td>
                       <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
+                          disabled={user.id === currentUser.id}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium border-0 outline-none ${
                             user.role === 'admin'
                               ? 'bg-purple-100 text-purple-700'
                               : user.role === 'supervisor'
                               ? 'bg-orange-100 text-orange-700'
                               : 'bg-emerald-100 text-emerald-700'
-                          }`}
+                          } ${user.id === currentUser.id ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                         >
-                          {user.role === 'admin' ? 'Admin' : user.role === 'supervisor' ? 'Supervisor' : 'Officer'}
-                        </span>
+                          <option value="supervisor">Supervisor</option>
+                          <option value="officer">Officer</option>
+                        </select>
                       </td>
                       <td className="py-4 px-6">
                         {user.role === 'supervisor' || user.role === 'officer' ? (
@@ -315,50 +330,33 @@ export default function UsersPage() {
                       <td className="py-4 px-6 text-slate-600 font-mono text-xs">
                         {user.badgeNumber || '-'}
                       </td>
-                      <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            user.isActive
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-slate-100 text-slate-600'
-                          }`}
+                      <td className="py-4 px-6 text-center">
+                        <button
+                          onClick={() => handleToggleActive(user.id, user.isActive)}
+                          disabled={user.id === currentUser.id}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                            user.isActive ? 'bg-emerald-500' : 'bg-slate-300'
+                          } ${user.id === currentUser.id ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                         >
-                          {user.isActive ? 'Hoạt động' : 'Vô hiệu'}
-                        </span>
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              user.isActive ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
                       </td>
                       <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        {user.id !== currentUser.id && (
                           <button
-                            onClick={() => handleToggleActive(user.id, user.isActive)}
-                            className={`p-1.5 rounded-lg transition ${
-                              user.isActive 
-                                ? 'text-amber-600 hover:bg-amber-50' 
-                                : 'text-emerald-600 hover:bg-emerald-50'
-                            }`}
-                            title={user.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                            onClick={() => handleDelete(user.id)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
+                            title="Xóa người dùng"
                           >
-                            {user.isActive ? (
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                            )}
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
-                          {user.id !== currentUser.id && (
-                            <button
-                              onClick={() => handleDelete(user.id)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
-                              title="Xóa người dùng"
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
+                        )}
                       </td>
                     </tr>
                   ))}

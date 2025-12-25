@@ -16,12 +16,15 @@ export default function DashboardPage() {
   const [officers, setOfficers] = useState<User[]>([]);
   const [selectedOfficer, setSelectedOfficer] = useState<User | null>(null);
   const [offices, setOffices] = useState<Office[]>([]);
+  const [allOffices, setAllOffices] = useState<Office[]>([]);
+  const [supervisors, setSupervisors] = useState<User[]>([]);
   const [selectedOffice, setSelectedOffice] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkInMessage, setCheckInMessage] = useState('');
   const [todayAttendance, setTodayAttendance] = useState<Attendance | null>(null);
+  const [adminView, setAdminView] = useState<'offices' | 'officers' | 'supervisors'>('offices');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -35,6 +38,8 @@ export default function DashboardPage() {
         fetchOfficers();
       } else if (user?.role === 'officer') {
         fetchAttendance();
+      } else if (user?.role === 'admin') {
+        fetchAllData();
       }
       fetchOffices();
     }
@@ -82,6 +87,34 @@ export default function DashboardPage() {
       }
     } catch (err: any) {
       console.error('Lỗi khi tải danh sách nhân viên:', err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchAllData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Fetch offices
+      const officesResponse = await officeAPI.getAll();
+      if (officesResponse.success) {
+        setAllOffices(officesResponse.data.offices);
+      }
+
+      // Fetch officers
+      const officersResponse = await userAPI.getAll({ role: 'officer' });
+      if (officersResponse.success) {
+        setOfficers(officersResponse.data.users);
+      }
+
+      // Fetch supervisors
+      const supervisorsResponse = await userAPI.getAll({ role: 'supervisor' });
+      if (supervisorsResponse.success) {
+        setSupervisors(supervisorsResponse.data.users);
+      }
+    } catch (err: any) {
+      console.error('Lỗi khi tải dữ liệu:', err.message);
     } finally {
       setIsLoading(false);
     }
@@ -235,6 +268,9 @@ export default function DashboardPage() {
 
   // Calculate stats based on role
   const getTotalCount = () => {
+    if (user.role === 'admin') {
+      return allOffices.length;
+    }
     if (user.role === 'supervisor') {
       return officers.length;
     }
@@ -242,6 +278,9 @@ export default function DashboardPage() {
   };
 
   const getValidCount = () => {
+    if (user.role === 'admin') {
+      return officers.length;
+    }
     if (user.role === 'supervisor') {
       // For supervisor, show active officers count
       return officers.filter(o => o.isActive).length;
@@ -250,6 +289,9 @@ export default function DashboardPage() {
   };
 
   const getInvalidCount = () => {
+    if (user.role === 'admin') {
+      return supervisors.length;
+    }
     if (user.role === 'supervisor') {
       // For supervisor, show inactive officers count
       return officers.filter(o => !o.isActive).length;
@@ -458,28 +500,219 @@ export default function DashboardPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard
-            title={user.role === 'supervisor' ? "TỔNG SỐ NHÂN VIÊN" : "TỔNG SỐ"}
-            value={getTotalCount()}
-            icon="📊"
-            color="blue"
-          />
-          <StatCard
-            title={user.role === 'supervisor' ? "ĐANG HOẠT ĐỘNG" : "HỢP LỆ"}
-            value={getValidCount()}
-            icon="✓"
-            color="green"
-          />
-          <StatCard
-            title={user.role === 'supervisor' ? "NGỪNG HOẠT ĐỘNG" : "KHÔNG HỢP LỆ"}
-            value={getInvalidCount()}
-            icon="✗"
-            color="red"
-          />
+          {user.role === 'admin' ? (
+            <>
+              <div onClick={() => setAdminView('offices')} className="cursor-pointer">
+                <StatCard
+                  title="TỔNG SỐ TRỤ SỞ"
+                  value={getTotalCount()}
+                  icon="🏢"
+                  color="blue"
+                />
+              </div>
+              <div onClick={() => setAdminView('officers')} className="cursor-pointer">
+                <StatCard
+                  title="TỔNG SỐ NHÂN VIÊN"
+                  value={getValidCount()}
+                  icon="👥"
+                  color="green"
+                />
+              </div>
+              <div onClick={() => setAdminView('supervisors')} className="cursor-pointer">
+                <StatCard
+                  title="TỔNG SỐ GIÁM SÁT"
+                  value={getInvalidCount()}
+                  icon="👔"
+                  color="red"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <StatCard
+                title={user.role === 'supervisor' ? "TỔNG SỐ NHÂN VIÊN" : "TỔNG SỐ"}
+                value={getTotalCount()}
+                icon="📊"
+                color="blue"
+              />
+              <StatCard
+                title={user.role === 'supervisor' ? "ĐANG HOẠT ĐỘNG" : "HỢP LỆ"}
+                value={getValidCount()}
+                icon="✓"
+                color="green"
+              />
+              <StatCard
+                title={user.role === 'supervisor' ? "NGỪNG HOẠT ĐỘNG" : "KHÔNG HỢP LỆ"}
+                value={getInvalidCount()}
+                icon="✗"
+                color="red"
+              />
+            </>
+          )}
         </div>
 
         {/* Attendance Records or Officer List */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          {user.role === 'admin' ? (
+            // Admin view
+            <>
+              <div className="p-6 border-b border-slate-100">
+                <h2 className="text-lg font-bold text-slate-900">
+                  {adminView === 'offices' && 'Danh sách Trụ sở'}
+                  {adminView === 'officers' && 'Danh sách Nhân viên'}
+                  {adminView === 'supervisors' && 'Danh sách Giám sát viên'}
+                </h2>
+              </div>
+
+              {isLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-orange-500 border-t-transparent mx-auto mb-3"></div>
+                  <p className="text-slate-500 text-sm">Đang tải dữ liệu...</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {adminView === 'offices' && (
+                    allOffices.length === 0 ? (
+                      <div className="text-center py-16">
+                        <p className="text-slate-900 font-medium text-lg">Chưa có trụ sở nào</p>
+                        <p className="text-slate-500 text-sm mt-1">Danh sách trụ sở sẽ xuất hiện tại đây</p>
+                      </div>
+                    ) : (
+                      allOffices.map((office) => (
+                        <div
+                          key={office._id || office.id}
+                          className="p-4 sm:p-6 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
+                                🏢
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900 text-lg">{office.name}</p>
+                                <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
+                                  <span>{office.address}</span>
+                                  <span>•</span>
+                                  <span>Bán kính: {office.radius}m</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              office.isActive
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {office.isActive ? 'Hoạt động' : 'Ngừng'}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )
+                  )}
+
+                  {adminView === 'officers' && (
+                    officers.length === 0 ? (
+                      <div className="text-center py-16">
+                        <p className="text-slate-900 font-medium text-lg">Chưa có nhân viên nào</p>
+                        <p className="text-slate-500 text-sm mt-1">Danh sách nhân viên sẽ xuất hiện tại đây</p>
+                      </div>
+                    ) : (
+                      officers.map((officer) => (
+                        <div
+                          key={officer.id || officer._id}
+                          className="p-4 sm:p-6 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg shrink-0">
+                                {officer.fullName.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900 text-lg">{officer.fullName}</p>
+                                <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
+                                  <span>{officer.email}</span>
+                                  {officer.badgeNumber && (
+                                    <>
+                                      <span>•</span>
+                                      <span>Mã: {officer.badgeNumber}</span>
+                                    </>
+                                  )}
+                                  {officer.department && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{officer.department}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              officer.isActive
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {officer.isActive ? 'Hoạt động' : 'Ngừng'}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )
+                  )}
+
+                  {adminView === 'supervisors' && (
+                    supervisors.length === 0 ? (
+                      <div className="text-center py-16">
+                        <p className="text-slate-900 font-medium text-lg">Chưa có giám sát viên nào</p>
+                        <p className="text-slate-500 text-sm mt-1">Danh sách giám sát viên sẽ xuất hiện tại đây</p>
+                      </div>
+                    ) : (
+                      supervisors.map((supervisor) => (
+                        <div
+                          key={supervisor.id || supervisor._id}
+                          className="p-4 sm:p-6 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-lg shrink-0">
+                                {supervisor.fullName.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900 text-lg">{supervisor.fullName}</p>
+                                <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
+                                  <span>{supervisor.email}</span>
+                                  {supervisor.badgeNumber && (
+                                    <>
+                                      <span>•</span>
+                                      <span>Mã: {supervisor.badgeNumber}</span>
+                                    </>
+                                  )}
+                                  {supervisor.department && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{supervisor.department}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              supervisor.isActive
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {supervisor.isActive ? 'Hoạt động' : 'Ngừng'}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            // Supervisor and Officer view
+            <>
           <div className="p-6 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {selectedOfficer && (
@@ -640,6 +873,8 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+          )}
+            </>
           )}
         </div>
       </main>

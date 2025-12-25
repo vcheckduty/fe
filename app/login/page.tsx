@@ -14,14 +14,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [countdown, setCountdown] = useState(300);
-  const [canResend, setCanResend] = useState(false);
+  const [activationEmail, setActivationEmail] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setActivationEmail('');
     setIsLoading(true);
 
     try {
@@ -30,32 +28,22 @@ export default function LoginPage() {
       if (response.success) {
         router.push('/dashboard');
       } else if (response.error === 'Account not activated' || (response as any).needsActivation) {
-        // Account needs activation - show OTP screen
+        // Account needs activation - show activation link
         const email = (response as any).email;
-        setUserEmail(email);
-        
-        // Send OTP
-        await authAPI.sendOTP(email);
-        setShowOTP(true);
-        setCountdown(300);
-        setCanResend(false);
+        if (email) {
+          setActivationEmail(email);
+        } else {
+          setError('Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.');
+        }
       } else {
         setError(response.error || 'Đăng nhập thất bại');
       }
     } catch (err: any) {
       if (err.message?.includes('Account not activated') || err.needsActivation) {
-        // Account needs activation
-        const email = err.email || userEmail;
+        // Account needs activation - show activation link
+        const email = err.email;
         if (email) {
-          setUserEmail(email);
-          try {
-            await authAPI.sendOTP(email);
-            setShowOTP(true);
-            setCountdown(300);
-            setCanResend(false);
-          } catch {
-            setError('Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.');
-          }
+          setActivationEmail(email);
         } else {
           setError('Tài khoản chưa được kích hoạt. Vui lòng liên hệ quản trị viên.');
         }
@@ -67,81 +55,11 @@ export default function LoginPage() {
     }
   };
 
-  const handleOTPComplete = async (otp: string) => {
-    setError('');
-    setIsLoading(true);
-
-    try {
-      await authAPI.verifyOTP(userEmail, otp);
-      alert('Tài khoản đã được kích hoạt! Vui lòng đăng nhập lại.');
-      setShowOTP(false);
-      setUsername('');
-      setPassword('');
-    } catch (err: any) {
-      setError(err.message || 'Mã OTP không hợp lệ');
-    } finally {
-      setIsLoading(false);
+  const handleActivateClick = () => {
+    if (activationEmail) {
+      router.push(`/verify?email=${encodeURIComponent(activationEmail)}`);
     }
   };
-
-  const handleResendOTP = async () => {
-    if (!canResend) return;
-    
-    setError('');
-    setIsLoading(true);
-
-    try {
-      await authAPI.sendOTP(userEmail);
-      setCountdown(300);
-      setCanResend(false);
-    } catch (err: any) {
-      setError(err.message || 'Không thể gửi lại mã OTP');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (showOTP) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md animate-scale-in border border-slate-100">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
-              <Logo size="lg" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Kích hoạt tài khoản</h2>
-            <p className="text-slate-600">
-              Mã OTP đã được gửi đến email:
-            </p>
-            <p className="font-medium text-orange-600 mt-1">{userEmail}</p>
-          </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
-              <span className="text-red-500">⚠️</span>
-              <p className="text-sm text-red-600 flex-1">{error}</p>
-            </div>
-          )}
-
-          <OTPInput
-            length={6}
-            onComplete={handleOTPComplete}
-            disabled={isLoading}
-          />
-
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => setShowOTP(false)}
-              className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-orange-600 font-medium transition-colors"
-            >
-              <span>←</span>
-              <span>Quay lại đăng nhập</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex bg-white">
@@ -205,6 +123,23 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold text-slate-900 mb-3">Chào mừng trở lại</h2>
             <p className="text-slate-500">Vui lòng nhập thông tin đăng nhập để tiếp tục</p>
           </div>
+
+          {activationEmail && (
+            <div className="mb-6 p-4 bg-orange-50 border border-orange-100 rounded-xl flex items-start gap-3 animate-fade-in">
+              <span className="text-orange-500">✉️</span>
+              <div className="flex-1">
+                <p className="text-sm text-orange-900 mb-2">
+                  Tài khoản chưa được kích hoạt. Vui lòng xác thực email để tiếp tục.
+                </p>
+                <button
+                  onClick={handleActivateClick}
+                  className="text-sm font-semibold text-orange-600 hover:text-orange-700 underline"
+                >
+                  Bấm vào đây để kích hoạt →
+                </button>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 animate-fade-in">
