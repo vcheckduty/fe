@@ -3,17 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { userAPI } from '@/lib/api';
-import type { User, UserRole } from '@/types';
+import { userAPI, officeAPI } from '@/lib/api';
+import type { User, UserRole, Office } from '@/types';
 import Logo from '@/components/Logo';
 
 export default function UsersPage() {
   const router = useRouter();
   const { user: currentUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
+  const [offices, setOffices] = useState<Office[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<string>('all');
+  const [showOfficeModal, setShowOfficeModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedOfficeId, setSelectedOfficeId] = useState<string>('');
 
   useEffect(() => {
     if (!authLoading && (!isAuthenticated || currentUser?.role !== 'admin')) {
@@ -24,6 +28,7 @@ export default function UsersPage() {
   useEffect(() => {
     if (isAuthenticated && currentUser?.role === 'admin') {
       fetchUsers();
+      fetchOffices();
     }
   }, [isAuthenticated, currentUser]);
 
@@ -38,6 +43,17 @@ export default function UsersPage() {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchOffices = async () => {
+    try {
+      const response = await officeAPI.getAll();
+      if (response.success) {
+        setOffices(response.data.offices.filter((o: Office) => o.isActive));
+      }
+    } catch (err: any) {
+      console.error('Lỗi khi tải danh sách trụ sở:', err.message);
     }
   };
 
@@ -63,6 +79,38 @@ export default function UsersPage() {
     }
   };
 
+  const handleAssignOffice = (user: User) => {
+    setSelectedUser(user);
+    setSelectedOfficeId(user.officeId || '');
+    setShowOfficeModal(true);
+  };
+
+  const handleOfficeAssignment = async () => {
+    if (!selectedUser) return;
+
+    try {
+      await userAPI.update(selectedUser.id, { officeId: selectedOfficeId || undefined });
+      setUsers(
+        users.map((u) => 
+          u.id === selectedUser.id 
+            ? { ...u, officeId: selectedOfficeId || undefined } 
+            : u
+        )
+      );
+      setShowOfficeModal(false);
+      setSelectedUser(null);
+      setSelectedOfficeId('');
+    } catch (err: any) {
+      alert('Cập nhật thất bại: ' + err.message);
+    }
+  };
+
+  const getOfficeName = (officeId?: string) => {
+    if (!officeId) return '-';
+    const office = offices.find(o => (o._id || o.id) === officeId);
+    return office?.name || '-';
+  };
+
   if (authLoading || !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -86,11 +134,9 @@ export default function UsersPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="p-2 hover:bg-slate-100 rounded-lg transition text-slate-500 hover:text-slate-700"
+                className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
+                ← Quay lại
               </button>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 text-orange-600">
@@ -218,6 +264,7 @@ export default function UsersPage() {
                     <th className="py-3 px-6">Tài khoản</th>
                     <th className="py-3 px-6">Email</th>
                     <th className="py-3 px-6">Vai trò</th>
+                    <th className="py-3 px-6">Trụ sở</th>
                     <th className="py-3 px-6">Số hiệu</th>
                     <th className="py-3 px-6">Trạng thái</th>
                     <th className="py-3 px-6 text-right">Hành động</th>
@@ -244,6 +291,26 @@ export default function UsersPage() {
                         >
                           {user.role === 'admin' ? 'Admin' : user.role === 'supervisor' ? 'Supervisor' : 'Officer'}
                         </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        {user.role === 'supervisor' || user.role === 'officer' ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-600">{getOfficeName(user.officeId)}</span>
+                            {user.role === 'supervisor' && (
+                              <button
+                                onClick={() => handleAssignOffice(user)}
+                                className="text-orange-600 hover:text-orange-700 cursor-pointer"
+                                title="Phân trụ sở"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400">-</span>
+                        )}
                       </td>
                       <td className="py-4 px-6 text-slate-600 font-mono text-xs">
                         {user.badgeNumber || '-'}
@@ -301,6 +368,71 @@ export default function UsersPage() {
           )}
         </div>
       </main>
+
+      {/* Office Assignment Modal */}
+      {showOfficeModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-slate-900">
+                Phân trụ sở cho {selectedUser.fullName}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowOfficeModal(false);
+                  setSelectedUser(null);
+                  setSelectedOfficeId('');
+                }}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Chọn trụ sở
+              </label>
+              <select
+                value={selectedOfficeId}
+                onChange={(e) => setSelectedOfficeId(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+              >
+                <option value="">-- Chưa phân trụ sở --</option>
+                {offices.map((office) => (
+                  <option key={office._id || office.id} value={office._id || office.id}>
+                    {office.name} - {office.address}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-xs text-slate-500">
+                Supervisor sẽ quản lý officers của trụ sở được chọn
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowOfficeModal(false);
+                  setSelectedUser(null);
+                  setSelectedOfficeId('');
+                }}
+                className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleOfficeAssignment}
+                className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition cursor-pointer"
+              >
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

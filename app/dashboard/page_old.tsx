@@ -304,7 +304,7 @@ export default function DashboardPage() {
                         <p className="flex items-center gap-2">
                           <span className="text-lg">⏰</span>
                           <span className="font-medium text-gray-700">
-                            {new Date(record.timestamp).toLocaleString('vi-VN')}
+                            {new Date(record.checkinTime).toLocaleString('vi-VN')}
                           </span>
                         </p>
                         <p className="flex items-center justify-between">

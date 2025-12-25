@@ -9,6 +9,7 @@ interface OfficeMembersModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: () => void;
+  currentUserRole?: string;
 }
 
 export default function OfficeMembersModal({
@@ -16,28 +17,43 @@ export default function OfficeMembersModal({
   isOpen,
   onClose,
   onUpdate,
+  currentUserRole,
 }: OfficeMembersModalProps) {
   const [members, setMembers] = useState<User[]>([]);
+  const [supervisors, setSupervisors] = useState<User[]>([]);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [availableSupervisors, setAvailableSupervisors] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Officer states
   const [showAddMember, setShowAddMember] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
+
+  // Supervisor states
+  const [showAddSupervisor, setShowAddSupervisor] = useState(false);
+  const [selectedSupervisorId, setSelectedSupervisorId] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       loadMembers();
+      loadSupervisors();
       loadAvailableUsers();
+      if (currentUserRole === 'admin') {
+        loadAvailableSupervisors();
+      }
     }
-  }, [isOpen, office._id]);
+  }, [isOpen, office._id, currentUserRole]);
 
   const loadMembers = async () => {
     try {
       const officeId = office._id || office.id || '';
       console.log('🔍 Loading members for office:', officeId, 'Office object:', office);
       const response = await officeAPI.getMembers(officeId);
-      setMembers(response.data.members);
+      // Filter out supervisors from members list if they are included, only show officers
+      const officersOnly = response.data.members.filter((m: User) => m.role === 'officer');
+      setMembers(officersOnly);
     } catch (err: any) {
       console.error('❌ Load members error:', err);
       setError(err.message || 'Failed to load members');
@@ -46,10 +62,35 @@ export default function OfficeMembersModal({
 
   const loadAvailableUsers = async () => {
     try {
+      // Always load officers for adding to office
       const response = await userAPI.getAll({ role: 'officer' });
       setAvailableUsers(response.data.users);
     } catch (err: any) {
       setError(err.message || 'Failed to load users');
+    }
+  };
+
+  const loadAvailableSupervisors = async () => {
+    try {
+      const response = await userAPI.getAll({ role: 'supervisor' });
+      setAvailableSupervisors(response.data.users);
+    } catch (err: any) {
+      console.error('Failed to load available supervisors:', err);
+    }
+  };
+
+  const loadSupervisors = async () => {
+    try {
+      // Load supervisors assigned to this office
+      const response = await userAPI.getAll({ role: 'supervisor' });
+      const allSupervisors = response.data.users;
+      const officeId = office._id || office.id || '';
+      const assignedSupervisors = allSupervisors.filter(
+        (s: User) => s.officeId === officeId
+      );
+      setSupervisors(assignedSupervisors);
+    } catch (err: any) {
+      console.error('Failed to load supervisors:', err);
     }
   };
 
@@ -77,6 +118,30 @@ export default function OfficeMembersModal({
     }
   };
 
+  const handleAddSupervisor = async () => {
+    if (!selectedSupervisorId) {
+      setError('Please select a supervisor');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      await officeAPI.addMember(office._id || office.id || '', selectedSupervisorId);
+      setSuccessMessage('Supervisor added successfully');
+      setShowAddSupervisor(false);
+      setSelectedSupervisorId('');
+      await loadSupervisors();
+      onUpdate();
+    } catch (err: any) {
+      setError(err.message || 'Failed to add supervisor');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRemoveMember = async (userId: string) => {
     if (!confirm('Are you sure you want to remove this member from the office?')) {
       return;
@@ -98,11 +163,37 @@ export default function OfficeMembersModal({
     }
   };
 
+  const handleRemoveSupervisor = async (userId: string) => {
+    if (!confirm('Are you sure you want to remove this supervisor from the office?')) {
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      await officeAPI.removeMember(office._id || office.id || '', userId);
+      setSuccessMessage('Supervisor removed successfully');
+      await loadSupervisors();
+      onUpdate();
+    } catch (err: any) {
+      setError(err.message || 'Failed to remove supervisor');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   const memberIds = members.map((m) => m.id || m._id);
   const usersNotInOffice = availableUsers.filter(
     (user) => !memberIds.includes(user.id || user._id) && user.isActive && !user.officeId
+  );
+
+  const supervisorIds = supervisors.map((s) => s.id || s._id);
+  const supervisorsNotInOffice = availableSupervisors.filter(
+    (user) => !supervisorIds.includes(user.id || user._id) && user.isActive && !user.officeId
   );
 
   return (
@@ -112,7 +203,9 @@ export default function OfficeMembersModal({
         <div className="px-6 py-4 border-b border-slate-200 bg-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Quản lý thành viên</h2>
+              <h2 className="text-xl font-bold text-slate-900">
+                Quản lý Thành viên
+              </h2>
               <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -152,7 +245,132 @@ export default function OfficeMembersModal({
             </div>
           )}
 
-          {/* Add Member Section */}
+          {/* Supervisors List - Visible to admin */}
+          {currentUserRole === 'admin' && (
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
+                Danh sách Supervisor
+                <span className="px-2 py-0.5 bg-blue-200 text-blue-700 rounded-full text-xs">{supervisors.length}</span>
+              </h3>
+              
+              {/* Add Supervisor Button */}
+              <div className="mb-4">
+                {!showAddSupervisor ? (
+                  <button
+                    onClick={() => setShowAddSupervisor(true)}
+                    disabled={supervisors.length > 0}
+                    className={`w-full py-3 px-4 bg-white border border-dashed border-blue-300 ${
+                      supervisors.length > 0 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'hover:border-blue-500 hover:bg-blue-50'
+                    } text-blue-600 font-medium rounded-xl transition flex items-center justify-center gap-2 group`}
+                  >
+                    <div className={`p-1 bg-blue-100 rounded-full ${supervisors.length === 0 ? 'group-hover:bg-blue-200' : ''} transition-colors`}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                    {supervisors.length > 0 ? 'Đã có Supervisor' : 'Thêm Supervisor mới'}
+                  </button>
+                ) : (
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Chọn Supervisor để thêm
+                        </label>
+                        <select
+                          value={selectedSupervisorId}
+                          onChange={(e) => setSelectedSupervisorId(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50"
+                        >
+                          <option value="">
+                            -- Chọn Supervisor --
+                          </option>
+                          {supervisorsNotInOffice.map((user) => (
+                            <option key={user.id || user._id} value={user.id || user._id}>
+                              {user.fullName} ({user.username})
+                            </option>
+                          ))}
+                        </select>
+                        {supervisorsNotInOffice.length === 0 && (
+                          <p className="text-xs text-amber-600 mt-2">
+                            * Không có Supervisor nào khả dụng (tất cả đã thuộc về trụ sở khác hoặc không hoạt động)
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-3 justify-end">
+                        <button
+                          onClick={() => {
+                            setShowAddSupervisor(false);
+                            setSelectedSupervisorId('');
+                            setError('');
+                          }}
+                          className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition"
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          onClick={handleAddSupervisor}
+                          disabled={isLoading || !selectedSupervisorId}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
+                        >
+                          {isLoading ? 'Đang thêm...' : 'Thêm Supervisor'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {supervisors.length > 0 ? (
+                <div className="space-y-2">
+                  {supervisors.map((supervisor) => (
+                    <div
+                      key={supervisor.id || supervisor._id}
+                      className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-200 group"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                          {supervisor.fullName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="ml-3">
+                          <p className="font-bold text-slate-900">{supervisor.fullName}</p>
+                          <div className="flex items-center gap-2 text-sm text-slate-500">
+                            <span>{supervisor.username}</span>
+                            <span>•</span>
+                            <span>{supervisor.email}</span>
+                          </div>
+                          {supervisor.badgeNumber && (
+                            <p className="text-xs text-slate-400 mt-0.5 font-mono bg-white inline-block px-1.5 rounded">
+                              ID: {supervisor.badgeNumber}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveSupervisor((supervisor.id || supervisor._id) as string)}
+                        disabled={isLoading}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100 focus:opacity-100"
+                        title="Xóa khỏi văn phòng"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 bg-white rounded-xl border border-slate-200 border-dashed">
+                  <p className="text-slate-500 text-sm">Chưa có Supervisor nào</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Add Member Section - Only for supervisor adding officers */}
+          {currentUserRole === 'supervisor' && (
           <div className="mb-6">
             {!showAddMember ? (
               <button
@@ -178,7 +396,9 @@ export default function OfficeMembersModal({
                       onChange={(e) => setSelectedUserId(e.target.value)}
                       className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none bg-slate-50"
                     >
-                      <option value="">-- Chọn nhân viên --</option>
+                      <option value="">
+                        -- Chọn nhân viên --
+                      </option>
                       {usersNotInOffice.map((user) => (
                         <option key={user.id || user._id} value={user.id || user._id}>
                           {user.fullName} ({user.username})
@@ -187,7 +407,7 @@ export default function OfficeMembersModal({
                     </select>
                     {usersNotInOffice.length === 0 && (
                       <p className="text-xs text-amber-600 mt-2">
-                        * Không có nhân viên nào khả dụng (tất cả đã thuộc về văn phòng khác hoặc không hoạt động)
+                        * Không có nhân viên nào khả dụng (tất cả đã thuộc về trụ sở khác hoặc không hoạt động)
                       </p>
                     )}
                   </div>
@@ -207,18 +427,19 @@ export default function OfficeMembersModal({
                       disabled={isLoading || !selectedUserId}
                       className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
                     >
-                      {isLoading ? 'Đang thêm...' : 'Thêm thành viên'}
+                      {isLoading ? 'Đang thêm...' : 'Thêm nhân viên'}
                     </button>
                   </div>
                 </div>
               </div>
             )}
           </div>
+          )}
 
           {/* Members List */}
           <div>
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-              Danh sách thành viên 
+              Danh sách Officer
               <span className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded-full text-xs">{members.length}</span>
             </h3>
             
@@ -229,8 +450,12 @@ export default function OfficeMembersModal({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 </div>
-                <p className="text-slate-500 font-medium">Chưa có thành viên nào</p>
-                <p className="text-slate-400 text-sm mt-1">Thêm thành viên mới để bắt đầu quản lý</p>
+                <p className="text-slate-500 font-medium">
+                  Chưa có nhân viên nào
+                </p>
+                <p className="text-slate-400 text-sm mt-1">
+                  Thêm nhân viên mới để bắt đầu quản lý
+                </p>
               </div>
             ) : (
               <div className="space-y-3">

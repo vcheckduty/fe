@@ -23,14 +23,9 @@ export default function StatCard({ title, value, icon, color, className = '' }: 
 
   return (
     <div className={`border rounded-2xl p-6 transition-all duration-200 ${colorClasses[color]} ${className}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
-          <p className="text-3xl font-bold">{value}</p>
-        </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${iconColorClasses[color]}`}>
-          {icon}
-        </div>
+      <div>
+        <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
+        <p className="text-3xl font-bold">{value}</p>
       </div>
     </div>
   );

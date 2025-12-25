@@ -171,11 +171,34 @@ export const attendanceAPI = {
       officeName: string;
       distance: number;
       status: 'Valid' | 'Invalid';
-      timestamp: Date;
+      checkinTime: Date;
       message: string;
     };
   }> => {
     return apiFetch('/api/checkin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  checkOut: async (data: {
+    officeId: string;
+    lat: number;
+    lng: number;
+  }): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      attendanceId: string;
+      checkoutTime: Date;
+      checkoutDistance: number;
+      totalHours: number;
+      checkinTime: Date;
+      officeName: string;
+      status: 'Valid' | 'Invalid';
+    };
+  }> => {
+    return apiFetch('/api/checkout', {
       method: 'POST',
       body: JSON.stringify(data),
     });

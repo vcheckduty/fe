@@ -61,7 +61,14 @@ export interface Attendance {
   };
   distance: number;
   status: 'Valid' | 'Invalid';
-  timestamp: Date;
+  checkinTime: Date;
+  checkoutTime?: Date;
+  checkoutLocation?: {
+    lat: number;
+    lng: number;
+  };
+  checkoutDistance?: number;
+  totalHours?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
