@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [todayAttendance, setTodayAttendance] = useState<Attendance | null>(null);
   const [adminView, setAdminView] = useState<'offices' | 'officers' | 'supervisors'>('offices');
   const [capturedPhoto, setCapturedPhoto] = useState<string>('');
-  const [previewPhoto, setPreviewPhoto] = useState<{url: string, title: string} | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<{url: string, title: string, location?: {lat: number, lng: number}, time?: string} | null>(null);
   const [isLocationVerified, setIsLocationVerified] = useState(false);
   const [isLocationChecked, setIsLocationChecked] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -370,7 +370,12 @@ export default function DashboardPage() {
   const invalidRecords = records.filter((r) => r.status === 'Invalid').length;
   const selectedOfficeData = offices.find(o => (o._id || o.id) === selectedOffice);
 
+  // Calculate total working hours - exclude rejected records
   const totalWorkingHours = records.reduce((acc, record) => {
+    // Don't count if check-in or check-out is rejected
+    if (record.checkinStatus === 'rejected' || record.checkoutStatus === 'rejected') {
+      return acc;
+    }
     return acc + (record.totalHours || 0);
   }, 0);
 
@@ -475,25 +480,13 @@ export default function DashboardPage() {
 
               <div className="flex items-center gap-2">
                 {(user.role === 'admin' || user.role === 'supervisor') && (
-                  <>
-                    <button
-                      onClick={() => router.push('/approvals')}
-                      className="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer flex items-center gap-2"
-                      title="Phê duyệt Check-in/out"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                      </svg>
-                      <span className="hidden sm:inline">Phê duyệt</span>
-                    </button>
-                    <button
-                      onClick={() => router.push('/offices')}
-                      className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors cursor-pointer"
-                      title="Quản lý trụ sở"
-                    >
-                      Trụ sở
-                    </button>
-                  </>
+                  <button
+                    onClick={() => router.push('/offices')}
+                    className="px-3 py-2 text-sm font-medium bg-orange-50 text-orange-600 hover:bg-orange-100 rounded-lg transition-colors cursor-pointer"
+                    title="Quản lý trụ sở"
+                  >
+                    Trụ sở
+                  </button>
                 )}
                 {user.role === 'admin' && (
                   <button
@@ -594,6 +587,12 @@ export default function DashboardPage() {
                       Đang chờ supervisor phê duyệt...
                     </p>
                   )}
+                  {todayAttendance.checkinStatus === 'rejected' && todayAttendance.checkinRejectionReason && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                      <p className="text-xs font-medium text-red-800 mb-1">Lý do từ chối:</p>
+                      <p className="text-xs text-red-700">{todayAttendance.checkinRejectionReason}</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Check-out status */}
@@ -628,6 +627,12 @@ export default function DashboardPage() {
                         </svg>
                         Đang chờ supervisor phê duyệt...
                       </p>
+                    )}
+                    {todayAttendance.checkoutStatus === 'rejected' && todayAttendance.checkoutRejectionReason && (
+                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                        <p className="text-xs font-medium text-red-800 mb-1">Lý do từ chối:</p>
+                        <p className="text-xs text-red-700">{todayAttendance.checkoutRejectionReason}</p>
+                      </div>
                     )}
                   </div>
                 )}
@@ -1031,6 +1036,7 @@ export default function DashboardPage() {
                     ? `Lịch sử điểm danh - ${selectedOfficer.fullName}`
                     : 'Lịch sử điểm danh'}
                 </h2>
+                
                 {((user.role === 'officer') || (user.role === 'supervisor' && selectedOfficer)) && records.length > 0 && (
                   <p className="text-sm text-slate-500 mt-1">
                     Tổng giờ làm: <span className="font-bold text-orange-600">{totalWorkingHours.toFixed(2)} giờ</span>
@@ -1038,6 +1044,19 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+            
+            {user.role === 'supervisor' && (
+              <button
+                onClick={() => router.push('/approvals')}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer flex items-center gap-2 shadow-sm hover:shadow-md"
+                title="Phê duyệt Check-in/out"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                <span className="hidden sm:inline">Phê duyệt</span>
+              </button>
+            )}
           </div>
           
           {isLoading ? (
@@ -1170,12 +1189,17 @@ export default function DashboardPage() {
                   <div className="mt-4 pt-4 border-t border-slate-100 pl-14 grid grid-cols-3 gap-4 text-sm">
                     <div 
                       className={record.checkinPhoto ? "cursor-pointer group" : ""}
-                      onClick={() => record.checkinPhoto && setPreviewPhoto({ url: record.checkinPhoto, title: 'Ảnh Check-in' })}
-                      title={record.checkinPhoto ? "Nhấn để xem ảnh check-in" : ""}
+                      onClick={() => record.checkinPhoto && setPreviewPhoto({ 
+                        url: record.checkinPhoto, 
+                        title: 'Ảnh Check-in',
+                        location: record.location,
+                        time: new Date(record.checkinTime).toLocaleString('vi-VN')
+                      })}
+                      title={record.checkinPhoto ? "Nhấn để xem ảnh và vị trí check-in" : ""}
                     >
                       <p className="text-slate-500 mb-1 flex items-center gap-1">
                         Bắt đầu
-                        {record.checkinPhoto && <span className="text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">📷</span>}
+                        {record.checkinPhoto && <span className="text-xs text-blue-500">📷</span>}
                       </p>
                       <p className={`font-medium ${record.checkinPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
                         {new Date(record.checkinTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
@@ -1183,12 +1207,17 @@ export default function DashboardPage() {
                     </div>
                     <div
                       className={record.checkoutPhoto ? "cursor-pointer group" : ""}
-                      onClick={() => record.checkoutPhoto && setPreviewPhoto({ url: record.checkoutPhoto, title: 'Ảnh Check-out' })}
-                      title={record.checkoutPhoto ? "Nhấn để xem ảnh check-out" : ""}
+                      onClick={() => record.checkoutPhoto && setPreviewPhoto({ 
+                        url: record.checkoutPhoto, 
+                        title: 'Ảnh Check-out',
+                        location: record.location,
+                        time: record.checkoutTime ? new Date(record.checkoutTime).toLocaleString('vi-VN') : undefined
+                      })}
+                      title={record.checkoutPhoto ? "Nhấn để xem ảnh và vị trí check-out" : ""}
                     >
                       <p className="text-slate-500 mb-1 flex items-center gap-1">
                         Kết thúc
-                        {record.checkoutPhoto && <span className="text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">📷</span>}
+                        {record.checkoutPhoto && <span className="text-xs text-blue-500">📷</span>}
                       </p>
                       {record.checkoutTime ? (
                         <p className={`font-medium ${record.checkoutPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
@@ -1200,7 +1229,9 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-slate-500 mb-1">Tổng giờ làm</p>
-                      {record.totalHours ? (
+                      {record.checkinStatus === 'rejected' || record.checkoutStatus === 'rejected' ? (
+                        <p className="text-red-600 italic text-sm">Không tính (bị từ chối)</p>
+                      ) : record.totalHours ? (
                         <p className="font-bold text-orange-600">{record.totalHours.toFixed(2)} /8 giờ</p>
                       ) : (
                         <p className="text-slate-400 italic">--</p>
@@ -1314,11 +1345,16 @@ export default function DashboardPage() {
           onClick={() => setPreviewPhoto(null)}
         >
           <div 
-            className="relative bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"
+            className="relative bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"
             onClick={e => e.stopPropagation()}
           >
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="font-bold text-lg text-slate-900">{previewPhoto.title}</h3>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">{previewPhoto.title}</h3>
+                {previewPhoto.time && (
+                  <p className="text-sm text-slate-500 mt-1">{previewPhoto.time}</p>
+                )}
+              </div>
               <button 
                 onClick={() => setPreviewPhoto(null)}
                 className="p-2 hover:bg-slate-100 rounded-full transition-colors"
@@ -1332,9 +1368,34 @@ export default function DashboardPage() {
               <img 
                 src={previewPhoto.url} 
                 alt={previewPhoto.title} 
-                className="max-h-[70vh] object-contain rounded-lg"
+                className="max-h-[60vh] object-contain rounded-lg"
               />
             </div>
+            {previewPhoto.location && (
+              <div className="p-4 border-t border-slate-100 bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-700 mb-1">Vị trí GPS</p>
+                    <p className="text-sm text-slate-600">
+                      {previewPhoto.location.lat.toFixed(6)}, {previewPhoto.location.lng.toFixed(6)}
+                    </p>
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${previewPhoto.location.lat},${previewPhoto.location.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Xem trên Google Maps
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

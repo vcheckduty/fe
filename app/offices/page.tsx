@@ -71,7 +71,7 @@ export default function OfficesPage() {
           lat: parseFloat(formData.lat),
           lng: parseFloat(formData.lng),
         },
-        radius: 50, // Fixed radius: 50m
+        radius: parseInt(formData.radius),
         description: formData.description,
         isActive: formData.isActive,
       };
@@ -404,6 +404,26 @@ export default function OfficesPage() {
                     placeholder="VD: 107.590"
                   />
                 </div>
+              </div>
+              
+              {/* Radius input */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Bán kính cho phép (m) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="10"
+                  max="500"
+                  value={formData.radius}
+                  onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
+                  required
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
+                  placeholder="VD: 50"
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  Khoảng cách tối đa cho phép check-in/check-out (10-500 mét)
+                </p>
               </div>
               
               {/* Helper text */}

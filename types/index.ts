@@ -6,13 +6,15 @@ export enum UserRole {
   SUPERVISOR = 'supervisor',
 }
 
+export type UserRoleType = 'admin' | 'officer' | 'supervisor';
+
 export interface User {
   _id?: string;
   id: string;
   username: string;
   email: string;
   fullName: string;
-  role: UserRole;
+  role: UserRoleType;
   badgeNumber?: string;
   department?: string;
   officeId?: string;
@@ -66,6 +68,7 @@ export interface Attendance {
   checkinStatus: 'pending' | 'approved' | 'rejected';
   checkinApprovedBy?: string;
   checkinApprovedAt?: Date;
+  checkinRejectionReason?: string; // Reason for rejection from supervisor
   checkinTime: Date;
   checkinPhoto?: string;
   checkinReason?: string;
@@ -75,6 +78,7 @@ export interface Attendance {
   checkoutStatus?: 'pending' | 'approved' | 'rejected';
   checkoutApprovedBy?: string;
   checkoutApprovedAt?: Date;
+  checkoutRejectionReason?: string; // Reason for rejection from supervisor
   checkoutTime?: Date;
   checkoutLocation?: {
     lat: number;
