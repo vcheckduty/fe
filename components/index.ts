@@ -9,6 +9,10 @@ export { default as OTPInput } from './OTPInput';
 export { default as StatCard } from './StatCard';
 export { default as StatusBadge } from './StatusBadge';
 export { default as CameraCapture } from './CameraCapture';
+export { default as ReasonForm } from './ReasonForm';
+export { default as CheckInOutFlow } from './CheckInOutFlow';
+export { default as CheckInOutModal } from './CheckInOutModal';
+export { default as PendingApprovals } from './PendingApprovals';
 
 // UI Components
 export { default as Button } from './ui/Button';

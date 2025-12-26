@@ -259,6 +259,21 @@ export const attendanceAPI = {
 
     return apiFetch(`/api/attendance?${query.toString()}`);
   },
+
+  addReason: async (data: {
+    attendanceId: string;
+    type: 'checkin' | 'checkout';
+    reason: string;
+    reasonPhoto?: string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+  }> => {
+    return apiFetch('/api/attendance/reason', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
 };
 
 // Office API

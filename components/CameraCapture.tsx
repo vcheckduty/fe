@@ -4,7 +4,7 @@ import { useRef, useState, useCallback } from 'react';
 
 interface CameraCaptureProps {
   onCapture: (photo: string) => void;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
@@ -73,7 +73,9 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
 
   const handleClose = () => {
     stopCamera();
-    onClose();
+    if (onClose) {
+      onClose();
+    }
   };
 
   return (

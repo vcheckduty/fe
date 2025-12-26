@@ -61,16 +61,31 @@ export interface Attendance {
   };
   distance: number;
   status: 'Valid' | 'Invalid';
+  
+  // Check-in approval workflow
+  checkinStatus: 'pending' | 'approved' | 'rejected';
+  checkinApprovedBy?: string;
+  checkinApprovedAt?: Date;
   checkinTime: Date;
+  checkinPhoto?: string;
+  checkinReason?: string;
+  checkinReasonPhoto?: string;
+  
+  // Check-out approval workflow
+  checkoutStatus?: 'pending' | 'approved' | 'rejected';
+  checkoutApprovedBy?: string;
+  checkoutApprovedAt?: Date;
   checkoutTime?: Date;
   checkoutLocation?: {
     lat: number;
     lng: number;
   };
   checkoutDistance?: number;
-  totalHours?: number;
-  checkinPhoto?: string;
   checkoutPhoto?: string;
+  checkoutReason?: string;
+  checkoutReasonPhoto?: string;
+  
+  totalHours?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
