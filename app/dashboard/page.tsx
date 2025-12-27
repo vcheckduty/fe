@@ -337,7 +337,7 @@ export default function DashboardPage() {
           });
 
           if (response.success) {
-            setCheckInMessage(`Kết thúc ca làm thành công! Tổng giờ làm việc: ${response.data.totalHours} giờ`);
+            setCheckInMessage('Kết thúc ca làm thành công!');
             setCapturedPhoto(''); // Reset photo
             setIsLocationChecked(false);
             setIsLocationVerified(false);
@@ -373,15 +373,6 @@ export default function DashboardPage() {
   const validRecords = records.filter((r) => r.status === 'Valid').length;
   const invalidRecords = records.filter((r) => r.status === 'Invalid').length;
   const selectedOfficeData = offices.find(o => (o._id || o.id) === selectedOffice);
-
-  // Calculate total working hours - exclude rejected records
-  const totalWorkingHours = records.reduce((acc, record) => {
-    // Don't count if check-in or check-out is rejected
-    if (record.checkinStatus === 'rejected' || record.checkoutStatus === 'rejected') {
-      return acc;
-    }
-    return acc + (record.totalHours || 0);
-  }, 0);
 
   // Calculate stats based on role
   const getTotalCount = () => {
@@ -691,11 +682,6 @@ export default function DashboardPage() {
                     <p className="text-sm text-slate-600 mb-1">
                       {new Date(todayAttendance.checkoutTime).toLocaleString('vi-VN')}
                     </p>
-                    {todayAttendance.totalHours !== undefined && (
-                      <p className="text-sm text-slate-600">
-                        Tổng giờ: <span className="font-bold text-orange-600">{todayAttendance.totalHours.toFixed(2)}h</span>
-                      </p>
-                    )}
                     {todayAttendance.checkoutStatus === 'pending' && (
                       <p className="text-xs text-yellow-600 mt-2 flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1112,12 +1098,6 @@ export default function DashboardPage() {
                     ? `Lịch sử điểm danh - ${selectedOfficer.fullName}`
                     : 'Lịch sử điểm danh'}
                 </h2>
-                
-                {((user.role === 'officer') || (user.role === 'supervisor' && selectedOfficer)) && records.length > 0 && (
-                  <p className="text-sm text-slate-500 mt-1">
-                    Tổng giờ làm: <span className="font-bold text-orange-600">{totalWorkingHours.toFixed(2)} giờ</span>
-                  </p>
-                )}
               </div>
             </div>
             
@@ -1413,7 +1393,6 @@ export default function DashboardPage() {
                     >
                       <p className="text-slate-500 mb-1 flex items-center gap-1">
                         Bắt đầu
-                        {record.checkinPhoto && <span className="text-xs text-blue-500">Thông tin</span>}
                       </p>
                       <p className={`font-medium ${record.checkinPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
                         {new Date(record.checkinTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
@@ -1442,13 +1421,23 @@ export default function DashboardPage() {
                       )}
                     </div>
                     <div>
-                      <p className="text-slate-500 mb-1">Tổng giờ làm</p>
+                      <p className="text-slate-500 mb-1">Trạng thái</p>
                       {record.checkinStatus === 'rejected' || record.checkoutStatus === 'rejected' ? (
-                        <p className="text-red-600 italic text-sm">Không tính (bị từ chối)</p>
-                      ) : record.totalHours ? (
-                        <p className="font-bold text-orange-600">{record.totalHours.toFixed(2)} /8 giờ</p>
+                        <div>
+                          <p className="font-medium text-red-600">Bị từ chối</p>
+                          {user.role === 'officer' && (
+                            <p
+                              onClick={() => router.push('/messages')}
+                              className="font-medium text-blue-600 hover:underline cursor-pointer"
+                            >
+                              Phản hồi
+                            </p>
+                          )}
+                        </div>
+                      ) : record.checkinStatus === 'approved' && (!record.checkoutTime || record.checkoutStatus === 'approved') ? (
+                        <p className="font-medium text-green-600">Đã duyệt</p>
                       ) : (
-                        <p className="text-slate-400 italic">--</p>
+                        <p className="font-medium text-yellow-600">Chờ duyệt</p>
                       )}
                     </div>
                   </div>
