@@ -1,7 +1,8 @@
 // Environment configuration
 export const config = {
-  // API Configuration
+  // API Configuration (same as backend URL for Socket.io)
   apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
   
   // Headquarters location (default - should be set in .env.local)
   office: {

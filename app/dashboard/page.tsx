@@ -497,6 +497,23 @@ export default function DashboardPage() {
                     Người dùng
                   </button>
                 )}
+                {user.role === 'officer' ? (
+                  <button
+                    onClick={() => router.push('/messages')}
+                    className="px-3 py-2 text-sm font-medium bg-blue-500 text-white hover:bg-blue-600 rounded-lg transition-colors cursor-pointer"
+                    title="Phản hồi với cấp trên"
+                  >
+                    📞 Phản hồi
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => router.push('/messages')}
+                    className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                    title="Tin nhắn"
+                  >
+                    💬 Tin nhắn
+                  </button>
+                )}
                 <button 
                   onClick={logout} 
                   className="px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors cursor-pointer"
