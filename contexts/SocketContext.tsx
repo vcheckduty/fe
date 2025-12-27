@@ -37,12 +37,14 @@ interface SocketContextType {
   startTyping: (receiverId: string) => void;
   stopTyping: (receiverId: string) => void;
   markAsRead: (messageId: string) => void;
+  markAllAsRead: (senderId: string) => void;
   onMessageReceive: (callback: (message: Message) => void) => (() => void) | undefined;
   onMessageSent: (callback: (message: Message) => void) => (() => void) | undefined;
   onTyping: (callback: (data: TypingUser) => void) => (() => void) | undefined;
   onUserOnline: (callback: (data: { userId: string }) => void) => (() => void) | undefined;
   onUserOffline: (callback: (data: { userId: string; lastSeen: Date }) => void) => (() => void) | undefined;
   onMessageRead: (callback: (data: { messageId: string; readAt: Date }) => void) => (() => void) | undefined;
+  onAllMessagesRead: (callback: (data: { readerId: string; count: number; readAt: Date }) => void) => (() => void) | undefined;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -126,6 +128,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     socket.emit('message:read', { messageId, userId: user._id || user.id });
   }, [socket, user]);
 
+  const markAllAsRead = useCallback((senderId: string) => {
+    if (!socket || !user) return;
+    socket.emit('messages:mark-all-read', { 
+      senderId, 
+      receiverId: user._id || user.id 
+    });
+  }, [socket, user]);
+
   const onMessageReceive = useCallback((callback: (message: Message) => void) => {
     if (!socket) return;
     socket.on('message:receive', callback);
@@ -174,6 +184,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
   }, [socket]);
 
+  const onAllMessagesRead = useCallback((callback: (data: { readerId: string; count: number; readAt: Date }) => void) => {
+    if (!socket) return;
+    socket.on('messages:all-read', callback);
+    return () => {
+      socket.off('messages:all-read', callback);
+    };
+  }, [socket]);
+
   const value: SocketContextType = {
     socket,
     connected,
@@ -181,12 +199,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     startTyping,
     stopTyping,
     markAsRead,
+    markAllAsRead,
     onMessageReceive,
     onMessageSent,
     onTyping,
     onUserOnline,
     onUserOffline,
     onMessageRead,
+    onAllMessagesRead,
   };
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;

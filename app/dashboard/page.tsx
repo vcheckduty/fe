@@ -37,6 +37,10 @@ export default function DashboardPage() {
   const [confirmDialogType, setConfirmDialogType] = useState<'checkin' | 'checkout'>('checkin');
   const [showReasonDialog, setShowReasonDialog] = useState(false);
   const [reasonDialogData, setReasonDialogData] = useState<{type: 'checkin' | 'checkout', attendanceId: string}>({type: 'checkin', attendanceId: ''});
+  const [showActionMenu, setShowActionMenu] = useState<{recordId: string, type: 'checkin' | 'checkout'} | null>(null);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [rejectDialogData, setRejectDialogData] = useState<{attendanceId: string, type: 'checkin' | 'checkout'} | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -453,6 +457,61 @@ export default function DashboardPage() {
       setShowReasonDialog(false);
     } catch (error: any) {
       setCheckInMessage('❌ Gửi lý do thất bại: ' + error.message);
+    }
+  };
+
+  const handleApproval = async (attendanceId: string, action: 'approve' | 'reject', type: 'checkin' | 'checkout', rejectionReason?: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/attendance/approve`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            attendanceId,
+            action,
+            type,
+            ...(action === 'reject' && rejectionReason ? { rejectionReason } : {}),
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        setCheckInMessage(`✅ ${action === 'approve' ? 'Đã duyệt' : 'Đã từ chối'} thành công!`);
+        setShowActionMenu(null);
+        // Reload attendance to see updated status
+        if (selectedOfficer) {
+          await fetchAttendance(selectedOfficer.id || selectedOfficer._id);
+        }
+      } else {
+        setCheckInMessage(`❌ ${data.error || 'Có lỗi xảy ra'}`);
+      }
+    } catch (error: any) {
+      setCheckInMessage(`❌ ${error.message || 'Có lỗi xảy ra'}`);
+    }
+  };
+
+  const handleRejectClick = (attendanceId: string, type: 'checkin' | 'checkout') => {
+    setRejectDialogData({ attendanceId, type });
+    setShowRejectDialog(true);
+    setShowActionMenu(null);
+  };
+
+  const handleRejectSubmit = async () => {
+    if (!rejectionReason.trim()) {
+      alert('Vui lòng nhập lý do từ chối');
+      return;
+    }
+    
+    if (rejectDialogData) {
+      await handleApproval(rejectDialogData.attendanceId, 'reject', rejectDialogData.type, rejectionReason);
+      setShowRejectDialog(false);
+      setRejectionReason('');
     }
   };
 
@@ -1145,7 +1204,7 @@ export default function DashboardPage() {
               {records.map((record) => (
                 <div 
                   key={record._id}
-                  className="p-4 sm:p-6 hover:bg-slate-50 transition-colors"
+                  className="p-4 sm:p-6 hover:bg-slate-50 transition-colors relative"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
@@ -1202,6 +1261,288 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   
+                  {/* Approval status for supervisor */}
+                  {user.role === 'supervisor' && selectedOfficer && (
+                    <div className="mt-4 pt-4 border-t border-slate-100 pl-14 space-y-3">
+                      {/* Check-in status */}
+                      <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-slate-700">Check-in:</span>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            record.checkinStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            record.checkinStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {record.checkinStatus === 'pending' ? 'Chờ duyệt' :
+                             record.checkinStatus === 'approved' ? 'Đã duyệt' :
+                             'Đã từ chối'}
+                          </span>
+                          {record.checkinRejectionReason && (
+                            <span className="text-xs text-red-600" title={record.checkinRejectionReason}>
+                              (Lý do: {record.checkinRejectionReason.substring(0, 30)}...)
+                            </span>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowActionMenu(
+                              showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkin' 
+                                ? null 
+                                : {recordId: record._id || '', type: 'checkin'}
+                            )}
+                            className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                            title="Thay đổi trạng thái"
+                          >
+                            <svg className="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                          </button>
+                          
+                          {showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkin' && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                              <button
+                                onClick={() => {
+                                  handleApproval(record._id || '', 'approve', 'checkin');
+                                }}
+                                disabled={record.checkinStatus === 'approved'}
+                                className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                  record.checkinStatus === 'approved' ? 'text-slate-400 cursor-not-allowed' : 'text-green-600'
+                                }`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                {record.checkinStatus === 'approved' ? 'Đã duyệt' : 'Duyệt'}
+                              </button>
+                              <button
+                                onClick={() => handleRejectClick(record._id || '', 'checkin')}
+                                disabled={record.checkinStatus === 'rejected'}
+                                className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                  record.checkinStatus === 'rejected' ? 'text-slate-400 cursor-not-allowed' : 'text-red-600'
+                                }`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                {record.checkinStatus === 'rejected' ? 'Đã từ chối' : 'Từ chối'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Check-out status */}
+                      {record.checkoutTime && (
+                        <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-slate-700">Check-out:</span>
+                            <span className={`px-2 py-1 text-xs rounded-full ${
+                              record.checkoutStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              record.checkoutStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {record.checkoutStatus === 'pending' ? 'Chờ duyệt' :
+                               record.checkoutStatus === 'approved' ? 'Đã duyệt' :
+                               'Đã từ chối'}
+                            </span>
+                            {record.checkoutRejectionReason && (
+                              <span className="text-xs text-red-600" title={record.checkoutRejectionReason}>
+                                (Lý do: {record.checkoutRejectionReason.substring(0, 30)}...)
+                              </span>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <button
+                              onClick={() => setShowActionMenu(
+                                showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkout' 
+                                  ? null 
+                                  : {recordId: record._id || '', type: 'checkout'}
+                              )}
+                              className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                              title="Thay đổi trạng thái"
+                            >
+                              <svg className="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                              </svg>
+                            </button>
+                            
+                            {showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkout' && (
+                              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                <button
+                                  onClick={() => {
+                                    handleApproval(record._id || '', 'approve', 'checkout');
+                                  }}
+                                  disabled={record.checkoutStatus === 'approved'}
+                                  className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                    record.checkoutStatus === 'approved' ? 'text-slate-400 cursor-not-allowed' : 'text-green-600'
+                                  }`}
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  {record.checkoutStatus === 'approved' ? 'Đã duyệt' : 'Duyệt'}
+                                </button>
+                                <button
+                                  onClick={() => handleRejectClick(record._id || '', 'checkout')}
+                                  disabled={record.checkoutStatus === 'rejected'}
+                                  className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                    record.checkoutStatus === 'rejected' ? 'text-slate-400 cursor-not-allowed' : 'text-red-600'
+                                  }`}
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  {record.checkoutStatus === 'rejected' ? 'Đã từ chối' : 'Từ chối'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Approval status for supervisor */}
+                  {user.role === 'supervisor' && selectedOfficer && (
+                    <div className="mt-4 pt-4 border-t border-slate-100 pl-14 space-y-3">
+                      {/* Check-in status */}
+                      <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-slate-700">Check-in:</span>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            record.checkinStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            record.checkinStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {record.checkinStatus === 'pending' ? 'Chờ duyệt' :
+                             record.checkinStatus === 'approved' ? 'Đã duyệt' :
+                             'Đã từ chối'}
+                          </span>
+                          {record.checkinRejectionReason && (
+                            <span className="text-xs text-red-600" title={record.checkinRejectionReason}>
+                              (Lý do: {record.checkinRejectionReason.substring(0, 30)}...)
+                            </span>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowActionMenu(
+                              showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkin' 
+                                ? null 
+                                : {recordId: record._id || '', type: 'checkin'}
+                            )}
+                            className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                            title="Thay đổi trạng thái"
+                          >
+                            <svg className="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                          </button>
+                          
+                          {showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkin' && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                              <button
+                                onClick={() => {
+                                  handleApproval(record._id || '', 'approve', 'checkin');
+                                }}
+                                disabled={record.checkinStatus === 'approved'}
+                                className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                  record.checkinStatus === 'approved' ? 'text-slate-400 cursor-not-allowed' : 'text-green-600'
+                                }`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                {record.checkinStatus === 'approved' ? 'Đã duyệt' : 'Duyệt'}
+                              </button>
+                              <button
+                                onClick={() => handleRejectClick(record._id || '', 'checkin')}
+                                disabled={record.checkinStatus === 'rejected'}
+                                className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                  record.checkinStatus === 'rejected' ? 'text-slate-400 cursor-not-allowed' : 'text-red-600'
+                                }`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                {record.checkinStatus === 'rejected' ? 'Đã từ chối' : 'Từ chối'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Check-out status */}
+                      {record.checkoutTime && (
+                        <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-slate-700">Check-out:</span>
+                            <span className={`px-2 py-1 text-xs rounded-full ${
+                              record.checkoutStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              record.checkoutStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {record.checkoutStatus === 'pending' ? 'Chờ duyệt' :
+                               record.checkoutStatus === 'approved' ? 'Đã duyệt' :
+                               'Đã từ chối'}
+                            </span>
+                            {record.checkoutRejectionReason && (
+                              <span className="text-xs text-red-600" title={record.checkoutRejectionReason}>
+                                (Lý do: {record.checkoutRejectionReason.substring(0, 30)}...)
+                              </span>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <button
+                              onClick={() => setShowActionMenu(
+                                showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkout' 
+                                  ? null 
+                                  : {recordId: record._id || '', type: 'checkout'}
+                              )}
+                              className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+                              title="Thay đổi trạng thái"
+                            >
+                              <svg className="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                              </svg>
+                            </button>
+                            
+                            {showActionMenu?.recordId === record._id && showActionMenu?.type === 'checkout' && (
+                              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                <button
+                                  onClick={() => {
+                                    handleApproval(record._id || '', 'approve', 'checkout');
+                                  }}
+                                  disabled={record.checkoutStatus === 'approved'}
+                                  className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                    record.checkoutStatus === 'approved' ? 'text-slate-400 cursor-not-allowed' : 'text-green-600'
+                                  }`}
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  {record.checkoutStatus === 'approved' ? 'Đã duyệt' : 'Duyệt'}
+                                </button>
+                                <button
+                                  onClick={() => handleRejectClick(record._id || '', 'checkout')}
+                                  disabled={record.checkoutStatus === 'rejected'}
+                                  className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 ${
+                                    record.checkoutStatus === 'rejected' ? 'text-slate-400 cursor-not-allowed' : 'text-red-600'
+                                  }`}
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  {record.checkoutStatus === 'rejected' ? 'Đã từ chối' : 'Từ chối'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Time info - always show */}
                   <div className="mt-4 pt-4 border-t border-slate-100 pl-14 grid grid-cols-3 gap-4 text-sm">
                     <div 
@@ -1448,6 +1789,60 @@ export default function DashboardPage() {
         onClose={() => setShowReasonDialog(false)}
         onSubmit={handleReasonSubmit}
       />
+
+      {/* Reject Dialog for Supervisor */}
+      {showRejectDialog && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={() => setShowRejectDialog(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-slate-900">Lý do từ chối</h3>
+              <button 
+                onClick={() => setShowRejectDialog(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Vui lòng nhập lý do từ chối <span className="text-red-600">*</span>
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Ví dụ: Ảnh không rõ mặt, vị trí không hợp lệ..."
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                rows={4}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowRejectDialog(false)}
+                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleRejectSubmit}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Xác nhận từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,11 +61,13 @@ export default function MessagesPage() {
     startTyping,
     stopTyping,
     markAsRead,
+    markAllAsRead,
     onMessageReceive,
     onMessageSent,
     onTyping,
     onUserOnline,
     onUserOffline,
+    onAllMessagesRead,
   } = useSocket();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -147,14 +149,28 @@ export default function MessagesPage() {
       }
     });
 
+    const cleanup6 = onAllMessagesRead?.((data: { readerId: string; count: number; readAt: Date }) => {
+      // Update all messages in UI to show as read
+      if (selectedUserId === data.readerId) {
+        setMessages((prev) => 
+          prev.map((msg) => 
+            msg.sender._id === (user?._id || user?.id) && msg.status !== 'read'
+              ? { ...msg, status: 'read' as const, readAt: data.readAt }
+              : msg
+          )
+        );
+      }
+    });
+
     return () => {
       cleanup1?.();
       cleanup2?.();
       cleanup3?.();
       cleanup4?.();
       cleanup5?.();
+      cleanup6?.();
     };
-  }, [connected, selectedUserId, otherUser]);
+  }, [connected, selectedUserId, otherUser, user]);
 
   const loadSupervisor = async () => {
     try {
@@ -230,12 +246,14 @@ export default function MessagesPage() {
         const data = await response.json();
         setMessages(data.messages || []);
         
-        // Mark unread messages as read
-        data.messages.forEach((msg: Message) => {
-          if (msg.receiver._id === user?._id && msg.status !== 'read') {
-            markAsRead(msg._id);
-          }
-        });
+        // Mark ALL unread messages from this user as read (once)
+        const hasUnread = data.messages.some(
+          (msg: Message) => msg.receiver._id === user?._id && msg.status !== 'read'
+        );
+        
+        if (hasUnread) {
+          markAllAsRead(userId);
+        }
       }
     } catch (error) {
       console.error('Load messages error:', error);
@@ -258,6 +276,11 @@ export default function MessagesPage() {
         isOnline: conversation.isOnline,
         lastSeen: conversation.lastSeen,
       });
+      
+      // Mark all messages from this user as read immediately
+      if (conversation.unreadCount > 0) {
+        markAllAsRead(userId);
+      }
     }
     
     loadMessages(userId);
