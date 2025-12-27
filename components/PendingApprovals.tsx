@@ -250,32 +250,32 @@ export default function PendingApprovals() {
           {/* Date Filter */}
           <div className="flex items-center gap-2">
             <label htmlFor="dateFilter" className="text-sm font-medium text-gray-700">
-              Lọc theo ngày:sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Duyệt điểm danh ({filteredAttendances.length})
-        </h2>
+              Lọc theo ngày:
+            </label>
+            <input
+              type="date"
+              id="dateFilter"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+            {selectedDate && (
+              <button
+                onClick={() => setSelectedDate('')}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Xóa bộ lọc"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
 
-        {/* Date Filter */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="dateFilter" className="text-sm font-medium text-gray-700">
-            Lọc theo ngày:
-          </label>
-          <input
-            type="date"
-            id="dateFilter"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          />
-          {selectedDate && (
-            <button
-              onClick={() => setSelectedDate('')}
-              className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Xóa bộ lọc"
-            >
-              ✕
-            </button>
-          )}"checkbox"
+        {/* Bulk actions */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
               checked={selectedIds.size === filteredAttendances.length && filteredAttendances.length > 0}
               onChange={handleSelectAll}
               className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
@@ -305,7 +305,7 @@ export default function PendingApprovals() {
             </div>
           )}
         </div>
-      )}
+      </div>
 
       <div className="grid gap-4">
         {filteredAttendances.map((attendance) => {
@@ -407,82 +407,30 @@ export default function PendingApprovals() {
                               />
                             </div>
                           )}
-                          <div className="flex gap-2 mt-3">
-                     attendance.checkinStatus === 'pending' && (
-                      <div className="border-t pt-3 mt-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-gray-900">Check-in</span>
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                            Chờ duyệt
-                          </span>
+                          {attendance.checkinStatus === 'pending' && (
+                            <div className="flex gap-2 mt-3">
+                              <Button
+                                onClick={() => handleApproval(attendance._id!, 'approve', 'checkin')}
+                                disabled={processingId === attendance._id}
+                                className="flex-1 bg-white !text-orange-600 border-2 border-orange-600 cursor-pointer"
+                              >
+                                Duyệt
+                              </Button>
+                              <Button
+                                onClick={() => handleRejectClick(attendance._id!, 'checkin')}
+                                disabled={processingId === attendance._id}
+                                className="flex-1 bg-red-600 text-white cursor-pointer"
+                              >
+                                Từ chối
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                        <div className="space-y-2 ml-4">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Thời gian:</span>
-                            <span className="text-gray-900">{formatDate(attendance.checkinTime)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Khoảng cách:</span>
-                            <span className={attendance.status === 'Invalid' ? 'text-red-600 font-medium' : 'text-green-600'}>
-                              {formatDistance(attendance.distance)}
-                            </span>
-                          </div>
-                          {attendance.checkinReason && (
-                            <div className="bg-gray-50 p-3 rounded-lg mt-2">
-                              <p className="text-xs text-gray-600 mb-1">Lý do:</p>
-                              <p className="text-sm text-gray-900">{attendance.checkinReason}</p>
-                              {attendance.checkinReasonPhoto && (
-                                <img
-                                  src={attendance.checkinReasonPhoto}
-                                  alt="Reason evidence"
-                                  className="mt-2 max-w-full h-32 object-cover rounded border"
-                                />
-                              )}
-                            </div>
-                          )}
-                          {attendance.checkinPhoto && (
-                            <div className="mt-2">
-                              <p className="text-xs text-gray-600 mb-1">Ảnh check-in:</p>
-                              <img
-                                src={attendance.checkinPhoto}
-                                alt="Check-in"
-                                className="max-w-full h-32 object-cover rounded border"
-                              />
-                            </div>
-                          )}
-                          <div className="flex gap-2 mt-3">
-                            <Button
-                              onClick={() => handleApproval(attendance._id!, 'approve', 'checkin')}
-                              disabled={processingId === attendance._id}
-                              className="flex-1 bg-white !text-orange-600 border-2 border-orange-600 cursor-pointer"
-                            >
-                              Duyệt
-                            </Button>
-                            <Button
-                              onClick={() => handleRejectClick(attendance._id!, 'checkin')}
-                              disabled={processingId === attendance._id}
-                              className="flex-1 bg-red-600 text-white cursor-pointer"
-                            >
-                              Từ chối
-                            </div>
-                          )}
-                          {attendance.checkoutPhoto && (
-                            <div className="mt-2">
-                              <p className="text-xs text-gray-600 mb-1">Ảnh check-out:</p>
-                              <img
-                                src={attendance.checkoutPhoto}
-                                alt="Check-out"
-                                className="max-w-full h-32 object-cover rounded border"
-                              />
-                            </div>
-                          )}
-                          <div className="flex gap-2 mt-3">
-                            <Button
-                              onClick={() => handleApproval(attendance._id!, 'approve', 'checkout')}
-                              disabled={processingId === attendance._id || attendance.checkoutStatus === 'approved'}
-                              className={`flex-1 ${
-                                attendance.checkoutStatus === 'approved'
-                     attendance.checkoutStatus === 'pending' && attendance.checkoutTime && (
+                      </div>
+                    )}
+
+                    {/* Check-out section */}
+                    {attendance.checkoutStatus === 'pending' && attendance.checkoutTime && (
                       <div className="border-t pt-3 mt-3">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-medium text-gray-900">Check-out</span>
@@ -507,6 +455,12 @@ export default function PendingApprovals() {
                               {attendance.totalHours?.toFixed(2)}h
                             </span>
                           </div>
+                          {attendance.checkoutRejectionReason && (
+                            <div className="bg-red-50 p-3 rounded-lg mt-2 border border-red-200">
+                              <p className="text-xs text-red-600 font-medium mb-1">Lý do từ chối:</p>
+                              <p className="text-sm text-red-800">{attendance.checkoutRejectionReason}</p>
+                            </div>
+                          )}
                           {attendance.checkoutReason && (
                             <div className="bg-gray-50 p-3 rounded-lg mt-2">
                               <p className="text-xs text-gray-600 mb-1">Lý do:</p>
@@ -544,6 +498,72 @@ export default function PendingApprovals() {
                               className="flex-1 bg-red-600 text-white cursor-pointer"
                             >
                               Từ chối
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Reject Dialog */}
+      {showRejectDialog && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={() => setShowRejectDialog(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Lý do từ chối</h3>
+              <button 
+                onClick={() => setShowRejectDialog(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Vui lòng nhập lý do từ chối <span className="text-red-600">*</span>
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Ví dụ: Ảnh không rõ mặt, vị trí không hợp lệ..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                rows={4}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowRejectDialog(false)}
+                className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleRejectSubmit}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Xác nhận từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
