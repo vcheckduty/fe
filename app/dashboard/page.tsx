@@ -1421,7 +1421,6 @@ export default function DashboardPage() {
                       )}
                     </div>
                     <div>
-                      <p className="text-slate-500 mb-1">Trạng thái</p>
                       {record.checkinStatus === 'rejected' || record.checkoutStatus === 'rejected' ? (
                         <div>
                           <p className="font-medium text-red-600">Bị từ chối</p>
