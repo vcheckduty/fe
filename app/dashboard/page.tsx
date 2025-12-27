@@ -1219,7 +1219,7 @@ export default function DashboardPage() {
                               {record.officeName}
                             </span>
                           )}
-                          {(user.role === 'supervisor' || user.role === 'admin') && (
+                          {/* {(user.role === 'supervisor' || user.role === 'admin') && (
                             <>
                               {record.location && (
                                 <a 
@@ -1242,7 +1242,7 @@ export default function DashboardPage() {
                                 </div>
                               )}
                             </>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -1413,7 +1413,7 @@ export default function DashboardPage() {
                     >
                       <p className="text-slate-500 mb-1 flex items-center gap-1">
                         Bắt đầu
-                        {record.checkinPhoto && <span className="text-xs text-blue-500">📷</span>}
+                        {record.checkinPhoto}
                       </p>
                       <p className={`font-medium ${record.checkinPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
                         {new Date(record.checkinTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
@@ -1431,7 +1431,7 @@ export default function DashboardPage() {
                     >
                       <p className="text-slate-500 mb-1 flex items-center gap-1">
                         Kết thúc
-                        {record.checkoutPhoto && <span className="text-xs text-blue-500">📷</span>}
+                        {record.checkoutPhoto}
                       </p>
                       {record.checkoutTime ? (
                         <p className={`font-medium ${record.checkoutPhoto ? "text-blue-600 group-hover:underline" : "text-slate-900"}`}>
