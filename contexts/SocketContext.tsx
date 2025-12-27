@@ -36,12 +36,12 @@ interface SocketContextType {
   startTyping: (receiverId: string) => void;
   stopTyping: (receiverId: string) => void;
   markAsRead: (messageId: string) => void;
-  onMessageReceive: (callback: (message: Message) => void) => void;
-  onMessageSent: (callback: (message: Message) => void) => void;
-  onTyping: (callback: (data: TypingUser) => void) => void;
-  onUserOnline: (callback: (data: { userId: string }) => void) => void;
-  onUserOffline: (callback: (data: { userId: string; lastSeen: Date }) => void) => void;
-  onMessageRead: (callback: (data: { messageId: string; readAt: Date }) => void) => void;
+  onMessageReceive: (callback: (message: Message) => void) => (() => void) | undefined;
+  onMessageSent: (callback: (message: Message) => void) => (() => void) | undefined;
+  onTyping: (callback: (data: TypingUser) => void) => (() => void) | undefined;
+  onUserOnline: (callback: (data: { userId: string }) => void) => (() => void) | undefined;
+  onUserOffline: (callback: (data: { userId: string; lastSeen: Date }) => void) => (() => void) | undefined;
+  onMessageRead: (callback: (data: { messageId: string; readAt: Date }) => void) => (() => void) | undefined;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);

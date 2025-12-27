@@ -15,6 +15,7 @@ interface Conversation {
     timestamp: Date;
     type: string;
     status: string;
+    sender: string;
   };
   unreadCount: number;
 }
