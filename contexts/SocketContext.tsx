@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import { config } from '@/lib/config';
 
 interface Message {
   _id: string;
@@ -62,7 +63,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (!user) return;
 
-    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+    const BACKEND_URL = config.backendUrl;
     
     const newSocket = io(BACKEND_URL, {
       transports: ['websocket', 'polling'],

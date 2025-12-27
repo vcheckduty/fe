@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSocket } from '@/contexts/SocketContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { config } from '@/lib/config';
 import { ConversationList } from '@/components/ConversationList';
 import { ChatWindow } from '@/components/ChatWindow';
 import { UserSearch } from '@/components/UserSearch';
@@ -159,7 +160,7 @@ export default function MessagesPage() {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/supervisor`,
+        `${config.backendUrl}/api/users/supervisor`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -195,7 +196,7 @@ export default function MessagesPage() {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/messages/conversations`,
+        `${config.backendUrl}/api/messages/conversations`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -217,7 +218,7 @@ export default function MessagesPage() {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/messages?userId=${userId}`,
+        `${config.backendUrl}/api/messages?userId=${userId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -271,7 +272,7 @@ export default function MessagesPage() {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/search?q=`,
+        `${config.backendUrl}/api/users/search?q=`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
