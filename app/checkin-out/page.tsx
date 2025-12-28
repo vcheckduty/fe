@@ -140,10 +140,10 @@ export default function CheckInOutPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Check-in / Check-out
+            Điểm danh
           </h1>
           <p className="text-gray-600">
-            Chụp ảnh và ghi nhận vị trí để check-in/out. Supervisor sẽ phê duyệt yêu cầu của bạn.
+            Chụp ảnh và ghi nhận vị trí để điểm danh. Supervisor sẽ phê duyệt yêu cầu của bạn.
           </p>
         </div>
 
@@ -183,10 +183,10 @@ export default function CheckInOutPage() {
               Trạng thái hôm nay
             </h2>
             
-            {/* Check-in Status */}
+            {/* Điểm danh vào Status */}
             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium text-gray-900">Check-in</h3>
+                <h3 className="font-medium text-gray-900">Điểm danh vào</h3>
                 {getStatusBadge(todayAttendance.checkinStatus)}
               </div>
               <div className="space-y-1 text-sm">
@@ -208,11 +208,11 @@ export default function CheckInOutPage() {
               </div>
             </div>
 
-            {/* Check-out Status */}
+            {/* Điểm danh ra Status */}
             {todayAttendance.checkoutTime && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-900">Check-out</h3>
+                  <h3 className="font-medium text-gray-900">Điểm danh ra</h3>
                   {todayAttendance.checkoutStatus && getStatusBadge(todayAttendance.checkoutStatus)}
                 </div>
                 <div className="space-y-1 text-sm">
