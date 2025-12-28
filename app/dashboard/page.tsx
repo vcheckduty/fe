@@ -249,7 +249,7 @@ export default function DashboardPage() {
     setIsCheckingIn(true);
 
     if (!selectedOffice) {
-      setCheckInMessage('Vui lòng chọn trụ sở để bắt đầu ca làm');
+      setCheckInMessage('Vui lòng chọn trụ sở để bắt đầu điểm danh');
       setIsCheckingIn(false);
       return;
     }
@@ -257,7 +257,7 @@ export default function DashboardPage() {
     setIsCheckingIn(true);
 
     if (!selectedOffice) {
-      setCheckInMessage('Vui lòng chọn trụ sở để bắt đầu ca làm');
+      setCheckInMessage('Vui lòng chọn trụ sở để bắt đầu điểm danh');
       setIsCheckingIn(false);
       return;
     }
@@ -791,7 +791,7 @@ export default function DashboardPage() {
                       <span>Đang xử lý...</span>
                     </>
                   ) : (
-                    <span>Bắt đầu ca làm</span>
+                    <span>bắt đầu điểm danh</span>
                   )}
                 </button>
               </div>
@@ -857,7 +857,7 @@ export default function DashboardPage() {
                   <span>Bạn đã kết thúc ca làm hôm nay</span>
                 </button>
                 <p className="text-sm text-slate-500 mt-3 text-center sm:text-left">
-                  Mai bạn sẽ có thể bắt đầu ca làm mới
+                  Mai bạn sẽ có thể bắt đầu điểm danh lại.
                 </p>
               </div>
             )}

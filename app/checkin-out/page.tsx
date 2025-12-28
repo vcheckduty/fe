@@ -266,8 +266,8 @@ export default function CheckInOutPage() {
               <h3 className="font-semibold text-lg mb-1">Check-in</h3>
               <p className="text-sm text-gray-600">
                 {canCheckIn 
-                  ? 'Bắt đầu ca làm việc'
-                  : 'Bạn đã check-in hôm nay'}
+                  ? 'Bắt đầu điểm danh'
+                  : 'Bạn đã điểm danh hôm nay'}
               </p>
             </button>
 
